@@ -7,3 +7,4 @@ Through this platform, we hope to learn best practices in version control, colla
 Publishing our project on Github offers a hands-on learning experience that can help us further develop our skills as newbies in 
 the Information Technology field, specifically in Programming.
 
+This group project <b>only utilizes arrays</b> and <u>does <b>not</b></u> involve the <u>use of any permanent database or storage</u> for entries.
