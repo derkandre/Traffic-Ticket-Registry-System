@@ -1,5 +1,5 @@
 # Traffic Ticket Registry System
-A required group project for IT104/L Computer Programming 2 throughout the entire 2nd semester.
+A required group project for our Programming 2 subject throughout the entire 2nd semester.
 
 
 This project is published on Github as a way for our group to gain valuable learning oppportunities in utilizing the platform. 
