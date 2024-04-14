@@ -8,55 +8,15 @@ namespace ttrs
     {
         static void Main(string[] args)
         {
-            string user, pass;
-            bool loggedIn = false;
+            Console.Clear();
             bool tryAgain = true;
+            LoginPage(false);
 
             do
             {
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Clear();
-
-
-
-                while (loggedIn == false)
-                {
-                    WriteCenter("▀█▀ █▀▄ ▄▀▄ █▀ █▀ █ ▄▀▀   ▀█▀ █ ▄▀▀ █▄▀ ██▀ ▀█▀   █▀▄ ██▀ ▄▀  █ ▄▀▀ ▀█▀ █▀▄ ▀▄▀   ▄▀▀ ▀▄▀ ▄▀▀ ▀█▀ ██▀ █▄ ▄█", 5);
-                    WriteCenter(" █  █▀▄ █▀█ █▀ █▀ █ ▀▄▄    █  █ ▀▄▄ █ █ █▄▄  █    █▀▄ █▄▄ ▀▄█ █ ▄██  █  █▀▄  █    ▄██  █  ▄██  █  █▄▄ █ ▀ █", 0);
-
-                    SetColor("yellow", "black");
-                    WriteCenter("+-------------------------------------+", 4);
-                    WriteCenter("LOG IN", -1);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                 USER                |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                 PASS                |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("|                                     |", 0);
-                    WriteCenter("+-------------------------------------+", 0);
-
-                    Console.ResetColor();
-
-                    Console.BackgroundColor = ConsoleColor.White;
-                    Console.ForegroundColor = ConsoleColor.Black;
-
-                    user = ReadSecure(-8).ToString();
-                    WriteCenter("\n", 0);
-                    Console.ResetColor();
-                    pass = ReadSecure(1).ToString();
-
-                    bool authentication = Authenticate(user, pass);
-
-                    if (authentication == true)
-                        loggedIn = true;
-
-                    ResetToDefaultColor();
-                    Console.Clear();
-                }
 
                 Console.CursorVisible = false;
 
@@ -71,12 +31,12 @@ namespace ttrs
                 WriteCenter("|    [2] Retrieve Ticket Records      |", 0);
                 WriteCenter("|    [3] Modify   Ticket Records      |", 0);
                 WriteCenter("|    [4] About Software               |", 0);
-                WriteCenter("|    [5] Log Out                      |", 0);
+                WriteCenter("|    [5] Log Out and Exit             |", 0);
                 WriteCenter("|                                     |", 0);
                 WriteCenter("+-------------------------------------+", 0);
                 ResetToDefaultColor();
 
-                WriteCenter("TTRS v0.02UIb", 7);
+                WriteCenter("TTRS v0.03UIb", 7);
 
                 hr(1);
 
@@ -93,18 +53,155 @@ namespace ttrs
                         i = -13;
 
                     tryAgain = false;
-                    WriteCenter("[5] Log Out                   ", i);
+                    WriteCenter("[5] Log Out and Exit         ", i);
                     Console.SetCursorPosition(40, Console.CursorTop + 4);
                     ResetToDefaultColor();
-                    Thread.Sleep(1500);
+                    Thread.Sleep(1000);
+                    LoginPage(true);
+                }
+                else if (menuChoice.Key == ConsoleKey.D4)
+                {
+                    Console.Clear();
+
+                    SetColor("yellow", "black");
+                    WriteCenter("+----------------------------------------------------------------------------------+", 4);
+                    WriteCenter("|                                    ISC License                                   |", 0);
+                    WriteCenter("|                                                                                  |", 0);
+                    WriteCenter("| Copyright (c) 2024 Derick Andre, Gabriel Federick and Joseph Lindell             |", 0);
+                    WriteCenter("|                                                                                  |", 0);
+                    WriteCenter("| Permission to use, copy, modify, and/or distribute this software for any purpose |", 0);
+                    WriteCenter("| with or without fee is hereby granted, provided that the above copyright notice  |", 0);
+                    WriteCenter("| and this permission notice appear in all copies.                                 |", 0);
+                    WriteCenter("|                                                                                  |", 0);
+                    WriteCenter("| THE SOFTWARE IS PROVIDED  \"AS IS\"  AND THE AUTHOR DISCLAIMS ALL WARRANTIES       |", 0);
+                    WriteCenter("| WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY |", 0);
+                    WriteCenter("| AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,     |", 0);
+                    WriteCenter("| INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS |", 0);
+                    WriteCenter("| OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER   |", 0);
+                    WriteCenter("| TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF  |", 0);
+                    WriteCenter("| THIS SOFTWARE.                                                                   |", 0);
+                    WriteCenter("|                                                                                  |", 0);
+                    WriteCenter("| https://github.com/derkandre/ttrs/blob/main/LICENSE.md                           |", 0);
+                    WriteCenter("+----------------------------------------------------------------------------------+", 0);
+                    ResetToDefaultColor();
+
+                    SetColor("yellow", "black");
+                    WriteCenter("[1] Go Back", 3);
+                    ResetToDefaultColor();
+
+                    ConsoleKeyInfo choice = Console.ReadKey(true);
+
+                    SetColor("black", "yellow");
+                    if (choice.Key == ConsoleKey.D1)
+                    {
+                        int i = -1;
+
+                        if (Console.BufferHeight != 30)
+                            i = -1;
+
+                        WriteCenter("[1] Go Back", i);
+                        Thread.Sleep(1000);
+                    }
                 }
                 else
                 {
                     UnderConstruction();
                     ResetToDefaultColor();
                 }
+
+                tryAgain = true;
+
             } while (tryAgain == true);
 
+        }
+        static void LoginPage(bool loggedIn)
+        {
+            string user, pass;
+            ConsoleKeyInfo toExit;
+
+            Console.Clear();
+            Console.CursorVisible = true;
+
+            if (loggedIn == true)
+            {
+                SetColor("yellow", "black");
+                WriteCenter("+------------------------+", 12);
+                WriteCenter("CONFIRMATION", -1);
+                WriteCenter("|                        |", 0);
+                WriteCenter("|                        |", 0);
+                WriteCenter("[Y/N] Exit", -1);
+                WriteCenter("|                        |", 0);
+                WriteCenter("+------------------------+", 0);
+
+                Console.CursorVisible = false;
+                toExit = Console.ReadKey(true);
+
+                if (toExit.Key == ConsoleKey.N)
+                {
+                    WriteCenter("  [N] Exit", -3);
+                    Console.CursorVisible = true;
+                    Console.SetCursorPosition((Console.WindowWidth - 3) / 2, Console.CursorTop - 1);
+                    loggedIn = false;
+                    Thread.Sleep(1000);
+                }
+                else if (toExit.Key == ConsoleKey.Y)
+                {
+                    WriteCenter("[Y] Exit  ", -3);
+                    Console.CursorVisible = true;
+                    Console.SetCursorPosition((Console.WindowWidth - 3) / 2, Console.CursorTop - 1);
+                    loggedIn = true;
+                    Thread.Sleep(1000);
+
+                    Environment.Exit(0);
+                }
+            }
+
+            while (loggedIn == false)
+            {
+                ResetToDefaultColor();
+                Console.Clear();
+
+                hr(0);
+                hr(27);
+
+                WriteCenter("▀█▀ █▀▄ ▄▀▄ █▀ █▀ █ ▄▀▀   ▀█▀ █ ▄▀▀ █▄▀ ██▀ ▀█▀   █▀▄ ██▀ ▄▀  █ ▄▀▀ ▀█▀ █▀▄ ▀▄▀   ▄▀▀ ▀▄▀ ▄▀▀ ▀█▀ ██▀ █▄ ▄█", -23);
+                WriteCenter(" █  █▀▄ █▀█ █▀ █▀ █ ▀▄▄    █  █ ▀▄▄ █ █ █▄▄  █    █▀▄ █▄▄ ▀▄█ █ ▄██  █  █▀▄  █    ▄██  █  ▄██  █  █▄▄ █ ▀ █", 0);
+
+                SetColor("yellow", "black");
+                WriteCenter("+-------------------------------------+", 4);
+                WriteCenter("LOG IN", -1);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                 USER                |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                 PASS                |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("|                                     |", 0);
+                WriteCenter("+-------------------------------------+", 0);
+
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+
+                user = ReadSecure(-8).ToString();
+                WriteCenter("\n", 0);
+                Console.ResetColor();
+                pass = ReadSecure(1).ToString();
+
+                bool authentication = Authenticate(user, pass);
+
+                if (authentication == true)
+                {
+                    loggedIn = true;
+                    ResetToDefaultColor();
+                    Console.Clear();
+                    return;
+                }
+
+                ResetToDefaultColor();
+                Console.Clear();
+            }
         }
         static bool Authenticate(string username, string password)
         {
@@ -114,30 +211,43 @@ namespace ttrs
             if (username == "enforcer" && password == "imissyou")
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Thread.Sleep(250);
+                Thread.Sleep(150);
                 WriteCenter("LOGGING IN", 2);
+
+                int j = 1;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i != 0)
+                        j = 0;
+
+                    Console.SetCursorPosition(65 + i, Console.CursorTop - j);
+                    Console.Write(".");
+                    Thread.Sleep(1000);
+                }
+
                 Console.SetCursorPosition(65, Console.CursorTop - 1);
-                Thread.Sleep(3500);
+                // Thread.Sleep(3000);
 
                 return true;
             }
-            else if (username == null || password == null)
+            else if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Thread.Sleep(250);
+                Thread.Sleep(150);
                 WriteCenter("MISSING USERNAME/PASSWORD", 2);
-                Console.SetCursorPosition(65, Console.CursorTop - 1);
-                Thread.Sleep(3500);
+                Console.SetCursorPosition(72, Console.CursorTop - 1);
+                Thread.Sleep(3000);
 
                 return false;
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                Thread.Sleep(250);
+                Thread.Sleep(150);
                 WriteCenter("INCORRECT USERNAME/PASSWORD", 2);
                 Console.SetCursorPosition(73, Console.CursorTop - 1);
-                Thread.Sleep(3500);
+                Thread.Sleep(3000);
             }
 
             Console.ResetColor();
@@ -149,10 +259,12 @@ namespace ttrs
 
             Console.SetCursorPosition(0, Console.CursorTop + cPosition);
 
+            SetColor("yellow", "yellow");
             for (int i = 0; i < cWidth; i++)
             {
                 Console.Write("=");
             }
+            ResetToDefaultColor();
         }
         static void WriteCenter(string text, int cPosition)
         {
@@ -268,7 +380,7 @@ namespace ttrs
             WriteCenter("TRAFFIC TICKET REGISTRY SYSTEM", 8);
 
             SetColor("yellow", "black");
-            WriteCenter("+-------------------------------------+", 2);
+            WriteCenter("+-------------------------------------+", 7);
             WriteCenter("UNDER CONSTRUCTION", -1);
             WriteCenter("|                                     |", 0);
             WriteCenter("|    [1] Go Back                      |", 0);
@@ -276,7 +388,7 @@ namespace ttrs
             WriteCenter("+-------------------------------------+", 0);
             ResetToDefaultColor();
 
-            WriteCenter("TTRS v0.02UIb", 9);
+            WriteCenter("TTRS v0.03UIb", 9);
 
             hr(1);
 
@@ -291,7 +403,7 @@ namespace ttrs
                     i = -15;
 
                 WriteCenter("[1] Go Back                   ", i);
-                Thread.Sleep(1500);
+                Thread.Sleep(1000);
                 return;
             }
         }
