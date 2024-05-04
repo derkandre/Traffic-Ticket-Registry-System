@@ -17,6 +17,7 @@ namespace ttrs
         static int noInsuranceCount = 0;
         static int noHelmetCount = 0;
         static int duiCount = 0;
+        static int ticketNum = 0;
         static void Main(string[] args)
         {
             Console.Clear();
@@ -25,6 +26,7 @@ namespace ttrs
 
             do
             {
+                Console.SetWindowSize(120, 30);
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Clear();
@@ -47,7 +49,7 @@ namespace ttrs
                 WriteCenter("+-------------------------------------+", 0);
                 ResetToDefaultColor();
 
-                WriteCenter("TTRS v0.04a", 7);
+                WriteCenter("TTRS v0.05a", 7);
 
                 hr(1);
 
@@ -136,22 +138,21 @@ namespace ttrs
         }
         static void RegisterTicketViolation()
         {
-            string ans = "";
-            string name = "";
+            string name;
             bool recordFound = false;
-            int payment;
 
+            Console.CursorVisible = true;
             Console.Clear();
 
             SetColor("yellow", "black");
-            WriteCenter("+-----------------------------------------+",2);
+            WriteCenter("+-----------------------------------------+", 2);
             WriteCenter("List of Violation", -1);
-            WriteCenter("|  (A)No License                          |", 0);
-            WriteCenter("|  (B)No Registration                     |", 0);
-            WriteCenter("|  (C)No Helmet                           |",0);
-            WriteCenter("|  (D)No Insurance                        |",0);
-            WriteCenter("|  (E)Driving Under the Influence (DUI)   |",0);
-            WriteCenter("+-----------------------------------------+",0);
+            WriteCenter("|  (A) No License                         |", 0);
+            WriteCenter("|  (B) No Registration                    |", 0);
+            WriteCenter("|  (C) No Helmet                          |", 0);
+            WriteCenter("|  (D) No Insurance                       |", 0);
+            WriteCenter("|  (E) Driving Under the Influence (DUI)  |", 0);
+            WriteCenter("+-----------------------------------------+", 0);
             ResetToDefaultColor();
 
             Console.Write("\n\t\t\t\t\t\tType of Violation: ");
@@ -163,7 +164,11 @@ namespace ttrs
                     noLicense[noLicenseCount, 0] = Console.ReadLine();
 
                     Console.Write("\t\t\t\t\t\tTicket Number    : ");
-                    noLicense[noLicenseCount, 1] = Console.ReadLine();
+
+                    ticketNum++;
+                    SetColor("yellow", "black");
+                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
@@ -175,22 +180,22 @@ namespace ttrs
                             recordFound = true;
                             if (noLicense[i, 3] == "1st")
                             {
-                                SetColor("yellow","black");
-                                WriteCenter("+-------------------------------+",1);
-                                WriteCenter("|    Existing Record(s) Found   |",0);
-                                WriteCenter("|    Offense Type     : 1st     |",0);
-                                WriteCenter("+-------------------------------+",0);
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                                WriteCenter("|    Offense Type     : 1st     |", 0);
+                                WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
                                 noLicense[i, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (noLicense[i, 3] == "2nd")
                             {
-                                SetColor("yellow","black");
-                                WriteCenter("+-------------------------------+",1);
-                                WriteCenter("|    Existing Record(s) Found   |",0);
-                                WriteCenter("|    Offense Type     : 2nd     |",0);
-                                WriteCenter("+-------------------------------+",0);
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                                WriteCenter("|    Offense Type     : 2nd     |", 0);
+                                WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
                                 noLicense[i, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
@@ -201,10 +206,10 @@ namespace ttrs
 
                     if (recordFound == false)
                     {
-                        SetColor("yellow","black");
-                        WriteCenter("+-------------------------------+",1);
-                        WriteCenter("|      No Record(s) Found       |",0);
-                        WriteCenter("+-------------------------------+",0);
+                        SetColor("yellow", "black");
+                        WriteCenter("+-------------------------------+", 1);
+                        WriteCenter("|      No Record(s) Found       |", 0);
+                        WriteCenter("+-------------------------------+", 0);
                         ResetToDefaultColor();
                         noLicense[noLicenseCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
@@ -219,8 +224,9 @@ namespace ttrs
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noRegistration[noRegistrationCount, 0] = Console.ReadLine();
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
-                    noRegistration[noRegistrationCount, 1] = Console.ReadLine();
+                    SetColor("yellow", "black");
+                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
@@ -255,9 +261,6 @@ namespace ttrs
                         }
                     }
 
-
-
-
                     if (recordFound == false)
                     {
                         SetColor("yellow", "black");
@@ -278,8 +281,9 @@ namespace ttrs
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noHelmet[noHelmetCount, 0] = Console.ReadLine();
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
-                    noHelmet[noHelmetCount, 1] = Console.ReadLine();
+                    SetColor("yellow", "black");
+                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
@@ -314,9 +318,6 @@ namespace ttrs
                         }
                     }
 
-
-
-
                     if (recordFound == false)
                     {
                         SetColor("yellow", "black");
@@ -337,8 +338,9 @@ namespace ttrs
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noInsurance[noInsuranceCount, 0] = Console.ReadLine();
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
-                    noInsurance[noInsuranceCount, 1] = Console.ReadLine();
+                    SetColor("yellow", "black");
+                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
@@ -374,8 +376,6 @@ namespace ttrs
                     }
 
 
-
-
                     if (recordFound == false)
                     {
                         SetColor("yellow", "black");
@@ -396,8 +396,9 @@ namespace ttrs
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     dui[duiCount, 0] = Console.ReadLine();
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
-                    dui[duiCount, 1] = Console.ReadLine();
+                    SetColor("yellow", "black");
+                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
@@ -432,9 +433,6 @@ namespace ttrs
                         }
                     }
 
-
-
-
                     if (recordFound == false)
                     {
                         SetColor("yellow", "black");
@@ -451,8 +449,6 @@ namespace ttrs
                     duiCount++;
                     break;
             }
-
-
         }
         static void LoginPage(bool loggedIn)
         {
