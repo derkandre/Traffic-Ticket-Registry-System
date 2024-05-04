@@ -12,12 +12,15 @@ namespace ttrs
         static string[,] dui = new string[999, 5];
         static string[,] noInsurance = new string[999, 5];
         static string[,] noRegistration = new string[999, 5];
+
         static int noLicenseCount = 0;
         static int noRegistrationCount = 0;
         static int noInsuranceCount = 0;
         static int noHelmetCount = 0;
         static int duiCount = 0;
+
         static int ticketNum = 0;
+
         static void Main(string[] args)
         {
             Console.Clear();
@@ -26,115 +29,127 @@ namespace ttrs
 
             do
             {
-                Console.SetWindowSize(120, 30);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Clear();
-
-                Console.CursorVisible = false;
-
-                hr(0);
-                WriteCenter("TRAFFIC TICKET REGISTRY SYSTEM", 6);
-
-                SetColor("yellow", "black");
-                WriteCenter("+-------------------------------------+", 2);
-                WriteCenter("MAIN MENU", -1);
-                WriteCenter("|                                     |", 0);
-                WriteCenter("|    [1] Register Ticket Violation    |", 0);
-                WriteCenter("|    [2] Search   Ticket Entries      |", 0);
-                WriteCenter("|    [3] View Violations Summary      |", 0);
-                WriteCenter("|    [4] About Software               |", 0);
-                WriteCenter("|    [5] Log Out and Exit             |", 0);
-                WriteCenter("|                                     |", 0);
-                WriteCenter("+-------------------------------------+", 0);
-                ResetToDefaultColor();
-
-                WriteCenter("TTRS v0.05a", 7);
-
-                hr(1);
-
-                ConsoleKeyInfo menuChoice = Console.ReadKey(true);
-
-                SetColor("black", "yellow");
-
-                if (menuChoice.Key == ConsoleKey.D1)
+                try
                 {
-                    RegisterTicketViolation();
-                }
-                else if (menuChoice.Key == ConsoleKey.D2)
-                {
-                    //SearchTicketEntries();
-                }
-                else if (menuChoice.Key == ConsoleKey.D5)
-                {
-                    int i = -12;
-
-                    // WT's buffer height is 30 while CMDs is 9001. FIXES: Cursor positioning is off.
-                    // Ref: https://github.com/microsoft/terminal/issues/8312
-                    if (Console.BufferHeight != 30)
-                        i = -13;
-
-                    tryAgain = false;
-                    WriteCenter("[5] Log Out and Exit         ", i);
-                    Console.SetCursorPosition(40, Console.CursorTop + 4);
-                    ResetToDefaultColor();
-                    Thread.Sleep(1000);
-                    LoginPage(true);
-                }
-                else if (menuChoice.Key == ConsoleKey.D4)
-                {
+                    Console.SetWindowSize(120, 30);
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.Clear();
 
-                    SetColor("yellow", "black");
-                    WriteCenter("+----------------------------------------------------------------------------------+", 4);
-                    WriteCenter("|                                    ISC License                                   |", 0);
-                    WriteCenter("|                                                                                  |", 0);
-                    WriteCenter("| Copyright (c) 2024 Derick Andre, Gabriel Federick and Joseph Lindell             |", 0);
-                    WriteCenter("|                                                                                  |", 0);
-                    WriteCenter("| Permission to use, copy, modify, and/or distribute this software for any purpose |", 0);
-                    WriteCenter("| with or without fee is hereby granted, provided that the above copyright notice  |", 0);
-                    WriteCenter("| and this permission notice appear in all copies.                                 |", 0);
-                    WriteCenter("|                                                                                  |", 0);
-                    WriteCenter("| THE SOFTWARE IS PROVIDED  \"AS IS\"  AND THE AUTHOR DISCLAIMS ALL WARRANTIES       |", 0);
-                    WriteCenter("| WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY |", 0);
-                    WriteCenter("| AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,     |", 0);
-                    WriteCenter("| INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS |", 0);
-                    WriteCenter("| OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER   |", 0);
-                    WriteCenter("| TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF  |", 0);
-                    WriteCenter("| THIS SOFTWARE.                                                                   |", 0);
-                    WriteCenter("|                                                                                  |", 0);
-                    WriteCenter("| https://github.com/derkandre/ttrs/blob/main/LICENSE.md                           |", 0);
-                    WriteCenter("+----------------------------------------------------------------------------------+", 0);
-                    ResetToDefaultColor();
+                    Console.CursorVisible = false;
+
+                    hr(0);
+                    WriteCenter("TRAFFIC TICKET REGISTRY SYSTEM", 6);
 
                     SetColor("yellow", "black");
-                    WriteCenter("[1] Go Back", 3);
+                    WriteCenter("+-------------------------------------+", 2);
+                    WriteCenter("MAIN MENU", -1);
+                    WriteCenter("|                                     |", 0);
+                    WriteCenter("|    [1] Register Ticket Violation    |", 0);
+                    WriteCenter("|    [2] Search   Ticket Entries      |", 0);
+                    WriteCenter("|    [3] View Violations Summary      |", 0);
+                    WriteCenter("|    [4] About Software               |", 0);
+                    WriteCenter("|    [5] Log Out and Exit             |", 0);
+                    WriteCenter("|                                     |", 0);
+                    WriteCenter("+-------------------------------------+", 0);
                     ResetToDefaultColor();
 
-                    ConsoleKeyInfo choice = Console.ReadKey(true);
+                    WriteCenter("TTRS v0.06a", 7);
+
+                    hr(1);
+
+                    ConsoleKeyInfo menuChoice = Console.ReadKey(true);
 
                     SetColor("black", "yellow");
-                    if (choice.Key == ConsoleKey.D1)
+
+                    if (menuChoice.Key == ConsoleKey.D1)
                     {
-                        int i = -1;
-
-                        if (Console.BufferHeight != 30)
-                            i = -1;
-
-                        WriteCenter("[1] Go Back", i);
-                        Thread.Sleep(1000);
+                        RegisterTicketViolation();
                     }
+                    else if (menuChoice.Key == ConsoleKey.D2)
+                    {
+                        //SearchTicketEntries();
+                    }
+                    else if (menuChoice.Key == ConsoleKey.D5)
+                    {
+                        int i = -12;
+
+                        // WT's buffer height is 30 while CMDs is 9001. FIXES: Cursor positioning is off.
+                        // Ref: https://github.com/microsoft/terminal/issues/8312
+                        if (Console.BufferHeight != 30)
+                            i = -13;
+
+                        tryAgain = false;
+                        WriteCenter("[5] Log Out and Exit         ", i);
+                        Console.SetCursorPosition(40, Console.CursorTop + 4);
+                        ResetToDefaultColor();
+                        Thread.Sleep(1000);
+                        LoginPage(true);
+                    }
+                    else if (menuChoice.Key == ConsoleKey.D4)
+                    {
+                        Console.Clear();
+
+                        SetColor("yellow", "black");
+                        WriteCenter("+----------------------------------------------------------------------------------+", 4);
+                        WriteCenter("|                                    ISC License                                   |", 0);
+                        WriteCenter("|                                                                                  |", 0);
+                        WriteCenter("| Copyright (c) 2024 Derick Andre, Gabriel Federick and Joseph Lindell             |", 0);
+                        WriteCenter("|                                                                                  |", 0);
+                        WriteCenter("| Permission to use, copy, modify, and/or distribute this software for any purpose |", 0);
+                        WriteCenter("| with or without fee is hereby granted, provided that the above copyright notice  |", 0);
+                        WriteCenter("| and this permission notice appear in all copies.                                 |", 0);
+                        WriteCenter("|                                                                                  |", 0);
+                        WriteCenter("| THE SOFTWARE IS PROVIDED  \"AS IS\"  AND THE AUTHOR DISCLAIMS ALL WARRANTIES       |", 0);
+                        WriteCenter("| WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY |", 0);
+                        WriteCenter("| AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,     |", 0);
+                        WriteCenter("| INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS |", 0);
+                        WriteCenter("| OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER   |", 0);
+                        WriteCenter("| TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF  |", 0);
+                        WriteCenter("| THIS SOFTWARE.                                                                   |", 0);
+                        WriteCenter("|                                                                                  |", 0);
+                        WriteCenter("| https://github.com/derkandre/ttrs/blob/main/LICENSE.md                           |", 0);
+                        WriteCenter("+----------------------------------------------------------------------------------+", 0);
+                        ResetToDefaultColor();
+
+                        SetColor("yellow", "black");
+                        WriteCenter("[1] Go Back", 3);
+                        ResetToDefaultColor();
+
+                        ConsoleKeyInfo choice = Console.ReadKey(true);
+
+                        SetColor("black", "yellow");
+                        if (choice.Key == ConsoleKey.D1)
+                        {
+                            int i = -1;
+
+                            if (Console.BufferHeight != 30)
+                                i = -1;
+
+                            WriteCenter("[1] Go Back", i);
+                            Thread.Sleep(1000);
+                        }
+                    }
+                    else
+                    {
+                        UnderConstruction();
+                        ResetToDefaultColor();
+                    }
+
+                    tryAgain = true;
+
                 }
-                else
+                catch (Exception ex)
                 {
-                    UnderConstruction();
+                    SetColor("red", "white");
+                    WriteCenter("+------------------------------------------+", 0);
+                    WriteCenter(ex.Message, 0);
+                    WriteCenter("+------------------------------------------+", 0);
                     ResetToDefaultColor();
+
+                    Console.ReadKey();
                 }
-
-                tryAgain = true;
-
             } while (tryAgain == true);
-
         }
         static void RegisterTicketViolation()
         {
@@ -145,21 +160,22 @@ namespace ttrs
             Console.Clear();
 
             SetColor("yellow", "black");
-            WriteCenter("+-----------------------------------------+", 2);
+            WriteCenter("+------------------------------------------+", 2);
             WriteCenter("List of Violation", -1);
-            WriteCenter("|  (A) No License                         |", 0);
-            WriteCenter("|  (B) No Registration                    |", 0);
-            WriteCenter("|  (C) No Helmet                          |", 0);
-            WriteCenter("|  (D) No Insurance                       |", 0);
-            WriteCenter("|  (E) Driving Under the Influence (DUI)  |", 0);
-            WriteCenter("+-----------------------------------------+", 0);
+            WriteCenter("|  (A) No License                          |", 0);
+            WriteCenter("|  (B) No Registration                     |", 0);
+            WriteCenter("|  (C) No Helmet                           |", 0);
+            WriteCenter("|  (D) No Insurance                        |", 0);
+            WriteCenter("|  (E) Driving Under the Influence (DUI)   |", 0);
+            WriteCenter("+------------------------------------------+", 0);
             ResetToDefaultColor();
 
             Console.Write("\n\t\t\t\t\t\tType of Violation: ");
-            char Type = char.Parse(Console.ReadLine().ToUpper());
-            switch (Type)
+            string choice = Console.ReadLine().ToUpper();
+
+            switch (choice)
             {
-                case 'A':
+                case "A":
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noLicense[noLicenseCount, 0] = Console.ReadLine();
 
@@ -218,14 +234,35 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noLicense[noLicenseCount, 4] = Console.ReadLine();
                     noLicenseCount++;
+
+                    for (int j = 0; j < noLicense.GetLength(1); j++)
+                    {
+                        if (string.IsNullOrWhiteSpace(noLicense[noLicenseCount - 1, j])) // Loops through the rows
+                        {
+                            /* It is actually quite simple to fix the logic error where the data just
+                               continues on. Instead of "deleting" the rows, overriding them is a better
+                               and more easy approach I suppose. It's just reseting the counter for the 
+                               row to be override and not be skipped.
+                            */
+
+                            noLicenseCount--; // Just 1 line of code instead of the solutions I found online.
+
+                            Console.WriteLine();
+                            throw new Exception("|       All input fields are required      |");
+                        }
+                    }
+
                     break;
 
-                case 'B':
+                case "B":
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noRegistration[noRegistrationCount, 0] = Console.ReadLine();
 
+                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+
+                    ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.WriteLine("{0}", noRegistration[noRegistrationCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
@@ -275,14 +312,29 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noRegistration[noRegistrationCount, 4] = Console.ReadLine();
                     noRegistrationCount++;
+
+                    for (int j = 0; j < noRegistration.GetLength(1); j++)
+                    {
+                        if (string.IsNullOrWhiteSpace(noRegistration[noRegistrationCount - 1, j])) // Loops through the rows
+                        {
+                            noRegistrationCount--;
+
+                            Console.WriteLine();
+                            throw new Exception("|       All input fields are required      |");
+                        }
+                    }
+
                     break;
 
-                case 'C':
+                case "C":
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noHelmet[noHelmetCount, 0] = Console.ReadLine();
 
+                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+
+                    ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.WriteLine("{0}", noHelmet[noHelmetCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
@@ -332,14 +384,29 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noHelmet[noHelmetCount, 4] = Console.ReadLine();
                     noHelmetCount++;
+
+                    for (int j = 0; j < noHelmet.GetLength(1); j++)
+                    {
+                        if (string.IsNullOrWhiteSpace(noHelmet[noHelmetCount - 1, j])) // Loops through the rows
+                        {
+                            noHelmetCount--;
+
+                            Console.WriteLine();
+                            throw new Exception("|       All input fields are required      |");
+                        }
+                    }
+
                     break;
 
-                case 'D':
+                case "D":
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     noInsurance[noInsuranceCount, 0] = Console.ReadLine();
 
+                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+
+                    ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.WriteLine("{0}", noInsurance[noInsuranceCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
@@ -390,14 +457,29 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noInsurance[noInsuranceCount, 4] = Console.ReadLine();
                     noInsuranceCount++;
+
+                    for (int k = 0; k < noInsurance.GetLength(1); k++)
+                    {
+                        if (string.IsNullOrWhiteSpace(noInsurance[noInsuranceCount - 1, k])) // Loops through the rows
+                        {
+                            noInsuranceCount--;
+
+                            Console.WriteLine();
+                            throw new Exception("|       All input fields are required      |");
+                        }
+                    }
+
                     break;
 
-                case 'E':
+                case "E":
                     Console.Write("\n\t\t\t\t\t\tDate             : ");
                     dui[duiCount, 0] = Console.ReadLine();
 
+                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+
+                    ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.WriteLine("{0}", dui[duiCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
                     Console.Write("\t\t\t\t\t\tName             : ");
@@ -447,8 +529,21 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     dui[duiCount, 4] = Console.ReadLine();
                     duiCount++;
+
+                    for (int j = 0; j < dui.GetLength(1); j++)
+                    {
+                        if (string.IsNullOrWhiteSpace(dui[duiCount - 1, j])) // Loops through the rows
+                        {
+                            duiCount--;
+
+                            Console.WriteLine();
+                            throw new Exception("|       All input fields are required      |");
+                        }
+                    }
+
                     break;
             }
+            return;
         }
         static void LoginPage(bool loggedIn)
         {
@@ -742,6 +837,9 @@ namespace ttrs
                     break;
                 case "yellow":
                     Console.BackgroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.BackgroundColor = ConsoleColor.Red;
                     break;
             }
             switch (fg)
