@@ -54,7 +54,7 @@ namespace ttrs
                     WriteCenter("+-------------------------------------+", 0);
                     ResetToDefaultColor();
 
-                    WriteCenter("TTRS v0.06a", 7);
+                    WriteCenter("TTRS v0.07a", 7);
 
                     hr(1);
 
@@ -69,6 +69,10 @@ namespace ttrs
                     else if (menuChoice.Key == ConsoleKey.D2)
                     {
                         //SearchTicketEntries();
+                    }
+                    else if (menuChoice.Key == ConsoleKey.D3)
+                    {
+                        ViewTicketViolationSummary();
                     }
                     else if (menuChoice.Key == ConsoleKey.D5)
                     {
@@ -194,6 +198,7 @@ namespace ttrs
                         if (noLicense[i, 2] == name)
                         {
                             recordFound = true;
+
                             if (noLicense[i, 3] == "1st")
                             {
                                 SetColor("yellow", "black");
@@ -202,7 +207,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 1st     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noLicense[i, 3] = "2nd";
+                                noLicense[i + 1, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (noLicense[i, 3] == "2nd")
@@ -213,7 +218,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 2nd     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noLicense[i, 3] = "3rd";
+                                noLicense[i + 1, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
                             }
                         }
@@ -234,23 +239,6 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noLicense[noLicenseCount, 4] = Console.ReadLine();
                     noLicenseCount++;
-
-                    for (int j = 0; j < noLicense.GetLength(1); j++)
-                    {
-                        if (string.IsNullOrWhiteSpace(noLicense[noLicenseCount - 1, j])) // Loops through the rows
-                        {
-                            /* It is actually quite simple to fix the logic error where the data just
-                               continues on. Instead of "deleting" the rows, overriding them is a better
-                               and more easy approach I suppose. It's just reseting the counter for the 
-                               row to be override and not be skipped.
-                            */
-
-                            noLicenseCount--; // Just 1 line of code instead of the solutions I found online.
-
-                            Console.WriteLine();
-                            throw new Exception("|       All input fields are required      |");
-                        }
-                    }
 
                     break;
 
@@ -281,7 +269,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 1st     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noRegistration[i, 3] = "2nd";
+                                noRegistration[i + 1, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (noRegistration[i, 3] == "2nd")
@@ -292,7 +280,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 2nd     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noRegistration[i, 3] = "3rd";
+                                noRegistration[i + 1, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
                             }
                         }
@@ -312,17 +300,6 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noRegistration[noRegistrationCount, 4] = Console.ReadLine();
                     noRegistrationCount++;
-
-                    for (int j = 0; j < noRegistration.GetLength(1); j++)
-                    {
-                        if (string.IsNullOrWhiteSpace(noRegistration[noRegistrationCount - 1, j])) // Loops through the rows
-                        {
-                            noRegistrationCount--;
-
-                            Console.WriteLine();
-                            throw new Exception("|       All input fields are required      |");
-                        }
-                    }
 
                     break;
 
@@ -353,7 +330,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 1st     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noHelmet[i, 3] = "2nd";
+                                noHelmet[i + 1, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (noHelmet[i, 3] == "2nd")
@@ -364,7 +341,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 2nd     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noHelmet[i, 3] = "3rd";
+                                noHelmet[i + 1, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
                             }
                         }
@@ -384,17 +361,6 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noHelmet[noHelmetCount, 4] = Console.ReadLine();
                     noHelmetCount++;
-
-                    for (int j = 0; j < noHelmet.GetLength(1); j++)
-                    {
-                        if (string.IsNullOrWhiteSpace(noHelmet[noHelmetCount - 1, j])) // Loops through the rows
-                        {
-                            noHelmetCount--;
-
-                            Console.WriteLine();
-                            throw new Exception("|       All input fields are required      |");
-                        }
-                    }
 
                     break;
 
@@ -425,7 +391,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 1st     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noInsurance[i, 3] = "2nd";
+                                noInsurance[i + 1, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (noInsurance[i, 3] == "2nd")
@@ -436,7 +402,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 2nd     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                noInsurance[i, 3] = "3rd";
+                                noInsurance[i + 1, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
                             }
                         }
@@ -457,17 +423,6 @@ namespace ttrs
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     noInsurance[noInsuranceCount, 4] = Console.ReadLine();
                     noInsuranceCount++;
-
-                    for (int k = 0; k < noInsurance.GetLength(1); k++)
-                    {
-                        if (string.IsNullOrWhiteSpace(noInsurance[noInsuranceCount - 1, k])) // Loops through the rows
-                        {
-                            noInsuranceCount--;
-
-                            Console.WriteLine();
-                            throw new Exception("|       All input fields are required      |");
-                        }
-                    }
 
                     break;
 
@@ -498,7 +453,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 1st     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                dui[i, 3] = "2nd";
+                                dui[i + 1, 3] = "2nd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
                             }
                             else if (dui[i, 3] == "2nd")
@@ -509,7 +464,7 @@ namespace ttrs
                                 WriteCenter("|    Offense Type     : 2nd     |", 0);
                                 WriteCenter("+-------------------------------+", 0);
                                 ResetToDefaultColor();
-                                dui[i, 3] = "3rd";
+                                dui[i + 1, 3] = "3rd";
                                 Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
                             }
                         }
@@ -525,26 +480,150 @@ namespace ttrs
                         dui[duiCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
                     }
+
                     dui[duiCount, 2] = name;
                     Console.Write("\t\t\t\t\t\tPayment          : ");
                     dui[duiCount, 4] = Console.ReadLine();
                     duiCount++;
 
-                    for (int j = 0; j < dui.GetLength(1); j++)
-                    {
-                        if (string.IsNullOrWhiteSpace(dui[duiCount - 1, j])) // Loops through the rows
-                        {
-                            duiCount--;
-
-                            Console.WriteLine();
-                            throw new Exception("|       All input fields are required      |");
-                        }
-                    }
-
                     break;
             }
             return;
         }
+
+        static void ViewTicketViolationSummary()
+        {
+            Console.Clear();
+
+            SetColor("yellow", "yellow");
+            hr(0);
+            ResetToDefaultColor();
+
+            Console.WriteLine(" Violation            | Date           | Ticket Number | Name                      " +
+                "| Offense Type | Payment     |");
+
+            SetColor("black", "black");
+            hr(0);
+            ResetToDefaultColor();
+
+            for (int i = 0; i < duiCount; i++)
+            {
+                tableRow();
+
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.WriteLine("  D U I");
+                Console.SetCursorPosition(22, Console.CursorTop - 1);
+                Console.WriteLine("| " + dui[i, 0]);
+                Console.SetCursorPosition(39, Console.CursorTop - 1);
+                Console.WriteLine("| " + dui[i, 1]);
+                Console.SetCursorPosition(55, Console.CursorTop - 1);
+                Console.WriteLine("| " + dui[i, 2]);
+                Console.SetCursorPosition(83, Console.CursorTop - 1);
+                Console.WriteLine("| " + dui[i, 3]);
+                Console.SetCursorPosition(98, Console.CursorTop - 1);
+                Console.WriteLine("| " + dui[i, 4]);
+                Console.SetCursorPosition(112, Console.CursorTop - 1);
+                Console.WriteLine("|");
+            }
+
+            for (int i = 0; i < noHelmetCount; i++)
+            {
+                tableRow();
+
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.WriteLine("  No Helmet");
+                Console.SetCursorPosition(22, Console.CursorTop - 1);
+                Console.WriteLine("| " + noHelmet[i, 0]);
+                Console.SetCursorPosition(39, Console.CursorTop - 1);
+                Console.WriteLine("| " + noHelmet[i, 1]);
+                Console.SetCursorPosition(55, Console.CursorTop - 1);
+                Console.WriteLine("| " + noHelmet[i, 2]);
+                Console.SetCursorPosition(83, Console.CursorTop - 1);
+                Console.WriteLine("| " + noHelmet[i, 3]);
+                Console.SetCursorPosition(98, Console.CursorTop - 1);
+                Console.WriteLine("| " + noHelmet[i, 4]);
+                Console.SetCursorPosition(112, Console.CursorTop - 1);
+                Console.WriteLine("|");
+            }
+
+            for (int i = 0; i < noInsuranceCount; i++)
+            {
+                tableRow();
+
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.WriteLine("  No Insurance");
+                Console.SetCursorPosition(22, Console.CursorTop - 1);
+                Console.WriteLine("| " + noInsurance[i, 0]);
+                Console.SetCursorPosition(39, Console.CursorTop - 1);
+                Console.WriteLine("| " + noInsurance[i, 1]);
+                Console.SetCursorPosition(55, Console.CursorTop - 1);
+                Console.WriteLine("| " + noInsurance[i, 2]);
+                Console.SetCursorPosition(83, Console.CursorTop - 1);
+                Console.WriteLine("| " + noInsurance[i, 3]);
+                Console.SetCursorPosition(98, Console.CursorTop - 1);
+                Console.WriteLine("| " + noInsurance[i, 4]);
+                Console.SetCursorPosition(112, Console.CursorTop - 1);
+                Console.WriteLine("|");
+            }
+
+            for (int i = 0; i < noLicenseCount; i++)
+            {
+                /* WriteCenter("---------NO LICENSE---------", 0);
+                WriteCenter("Date    : " + noLicense[i, 0], 0);
+                WriteCenter("Ticket #: " + noLicense[i, 1], 0);
+                WriteCenter("Name    : " + noLicense[i, 2], 0);
+                WriteCenter("Offense : " + noLicense[i, 3], 0);
+                WriteCenter("Payment : " + noLicense[i, 4], 0);
+                Console.WriteLine(); */
+
+                /* Console.WriteLine("\tNo Registration | Date    : " + noRegistration[i, 1] + "Ticket #: " + noRegistration[i, 2] +
+                    "Name    : " + noRegistration[i, 3] + "Offense : " + noRegistration[i, 4] + "Payment : " + noRegistration[i, 0], 0); */
+
+                tableRow();
+
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.WriteLine("  No License");
+                Console.SetCursorPosition(22, Console.CursorTop - 1);
+                Console.WriteLine("| " + noLicense[i, 0]);
+                Console.SetCursorPosition(39, Console.CursorTop - 1);
+                Console.WriteLine("| " + noLicense[i, 1]);
+                Console.SetCursorPosition(55, Console.CursorTop - 1);
+                Console.WriteLine("| " + noLicense[i, 2]);
+                Console.SetCursorPosition(83, Console.CursorTop - 1);
+                Console.WriteLine("| " + noLicense[i, 3]);
+                Console.SetCursorPosition(98, Console.CursorTop - 1);
+                Console.WriteLine("| " + noLicense[i, 4]);
+                Console.SetCursorPosition(112, Console.CursorTop - 1);
+                Console.WriteLine("|");
+            }
+
+            for (int i = 0; i < noRegistrationCount; i++)
+            {
+                tableRow();
+
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.WriteLine("  No Registration");
+                Console.SetCursorPosition(22, Console.CursorTop - 1);
+                Console.WriteLine("| " + noRegistration[i, 0]);
+                Console.SetCursorPosition(39, Console.CursorTop - 1);
+                Console.WriteLine("| " + noRegistration[i, 1]);
+                Console.SetCursorPosition(55, Console.CursorTop - 1);
+                Console.WriteLine("| " + noRegistration[i, 2]);
+                Console.SetCursorPosition(83, Console.CursorTop - 1);
+                Console.WriteLine("| " + noRegistration[i, 3]);
+                Console.SetCursorPosition(98, Console.CursorTop - 1);
+                Console.WriteLine("| " + noRegistration[i, 4]);
+                Console.SetCursorPosition(112, Console.CursorTop - 1);
+                Console.WriteLine("|");
+            }
+
+            SetColor("yellow", "yellow");
+            hr(0);
+            ResetToDefaultColor();
+
+            Console.ReadKey();
+        }
+
         static void LoginPage(bool loggedIn)
         {
             string user, pass;
@@ -687,7 +766,7 @@ namespace ttrs
 
         // Beyond this are methods for UI Design.
 
-        static void hr(int cPosition)
+        static void hr(int cPosition) // Inspired by HTML's horizontal rule
         {
             int cWidth = Console.WindowWidth;
 
@@ -696,9 +775,17 @@ namespace ttrs
             SetColor("yellow", "yellow");
             for (int i = 0; i < cWidth; i++)
             {
-                Console.Write("=");
+                Console.Write(" ");
             }
             ResetToDefaultColor();
+        }
+
+        static void tableRow()
+        {
+            for (int i = 0; i < Console.WindowWidth; i++)
+            {
+                Console.Write(" ");
+            }
         }
         static void WriteCenter(string text, int cPosition)
         {
@@ -708,18 +795,7 @@ namespace ttrs
 
             Console.WriteLine(text);
         }
-        static string ReadCenter(int cPosition)
-        {
-            int cWidth = Console.WindowWidth;
 
-            Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop + cPosition);
-            Console.BackgroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("        ");
-
-            Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop - 1);
-
-            return Console.ReadLine();
-        }
         static string ReadField(int cPosition, string fieldType)
         {
             if (fieldType == "user/pass")
@@ -840,6 +916,9 @@ namespace ttrs
                     break;
                 case "red":
                     Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+                case "darkyellow":
+                    Console.BackgroundColor = ConsoleColor.DarkYellow;
                     break;
             }
             switch (fg)
