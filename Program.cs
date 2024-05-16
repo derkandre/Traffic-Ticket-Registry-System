@@ -1,28 +1,39 @@
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Dynamic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
+using System.Timers;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ttrs
 {
     class Program
     {
+        static string[,] dui = new string[999, 5];
         static string[,] noHelmet = new string[999, 5];
         static string[,] noLicense = new string[999, 5];
-        static string[,] dui = new string[999, 5];
         static string[,] noInsurance = new string[999, 5];
         static string[,] noRegistration = new string[999, 5];
 
-        static int noLicenseCount = 0;
         static int noRegistrationCount = 0;
         static int noInsuranceCount = 0;
+        static int noLicenseCount = 0;
         static int noHelmetCount = 0;
         static int duiCount = 0;
 
         static int ticketNum = 0;
+        static int offenseTrack = 0;
+        static int recordCounts = 0;
 
         static void Main(string[] args)
         {
+            System.Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.Clear();
             bool tryAgain = true;
             LoginPage(false);
@@ -54,7 +65,7 @@ namespace ttrs
                     WriteCenter("+-------------------------------------+", 0);
                     ResetToDefaultColor();
 
-                    WriteCenter("TTRS v0.07a", 7);
+                    WriteCenter("TTRS v0.08a", 7);
 
                     hr(1);
 
@@ -68,7 +79,7 @@ namespace ttrs
                     }
                     else if (menuChoice.Key == ConsoleKey.D2)
                     {
-                        //SearchTicketEntries();
+                        SearchViolation();
                     }
                     else if (menuChoice.Key == ConsoleKey.D3)
                     {
@@ -84,9 +95,6 @@ namespace ttrs
                             i = -13;
 
                         tryAgain = false;
-                        WriteCenter("[5] Log Out and Exit         ", i);
-                        Console.SetCursorPosition(40, Console.CursorTop + 4);
-                        ResetToDefaultColor();
                         Thread.Sleep(1000);
                         LoginPage(true);
                     }
@@ -116,27 +124,10 @@ namespace ttrs
                         WriteCenter("+----------------------------------------------------------------------------------+", 0);
                         ResetToDefaultColor();
 
-                        SetColor("yellow", "black");
-                        WriteCenter("[1] Go Back", 3);
-                        ResetToDefaultColor();
-
-                        ConsoleKeyInfo choice = Console.ReadKey(true);
-
-                        SetColor("black", "yellow");
-                        if (choice.Key == ConsoleKey.D1)
-                        {
-                            int i = -1;
-
-                            if (Console.BufferHeight != 30)
-                                i = -1;
-
-                            WriteCenter("[1] Go Back", i);
-                            Thread.Sleep(1000);
-                        }
+                        Console.ReadKey();
                     }
                     else
                     {
-                        UnderConstruction();
                         ResetToDefaultColor();
                     }
 
@@ -158,72 +149,140 @@ namespace ttrs
         static void RegisterTicketViolation()
         {
             string name;
+            int result = 0;
             bool recordFound = false;
 
-            Console.CursorVisible = true;
             Console.Clear();
 
+            hr(0);
+            hr(28);
+
             SetColor("yellow", "black");
-            WriteCenter("+------------------------------------------+", 2);
-            WriteCenter("List of Violation", -1);
-            WriteCenter("|  (A) No License                          |", 0);
-            WriteCenter("|  (B) No Registration                     |", 0);
-            WriteCenter("|  (C) No Helmet                           |", 0);
-            WriteCenter("|  (D) No Insurance                        |", 0);
-            WriteCenter("|  (E) Driving Under the Influence (DUI)   |", 0);
+            WriteCenter("+------------------------------------------+", -18);
+            WriteCenter("List of Violations", -1);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("|  [A] No License                          |", 0);
+            WriteCenter("|  [B] No Registration                     |", 0);
+            WriteCenter("|  [C] No Helmet                           |", 0);
+            WriteCenter("|  [D] No Insurance                        |", 0);
+            WriteCenter("|  [E] Driving Under the Influence (DUI)   |", 0);
+            WriteCenter("|                                          |", 0);
             WriteCenter("+------------------------------------------+", 0);
             ResetToDefaultColor();
 
-            Console.Write("\n\t\t\t\t\t\tType of Violation: ");
-            string choice = Console.ReadLine().ToUpper();
+            ConsoleKeyInfo choice = Console.ReadKey(true);
 
-            switch (choice)
+            Console.Clear();
+            Console.CursorVisible = true;
+
+            hr(0);
+            hr(28);
+
+            Console.SetCursorPosition(0, Console.CursorTop - 28);
+
+            switch (choice.Key)
             {
-                case "A":
-                    Console.Write("\n\t\t\t\t\t\tDate             : ");
-                    noLicense[noLicenseCount, 0] = Console.ReadLine();
+                case ConsoleKey.A:
+                    int i;
+                    result = 0;
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+                    SetColor("yellow", "black");
+                    WriteCenter("            NO LICENSE           ", 5);
+                    ResetToDefaultColor();
+
+                    CheckDate("noLicense");
+
+                    Console.Write("\n\t\t\t\t\t\tTicket Number    : ");
 
                     ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.Write("{0}", noLicense[noLicenseCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
-                    Console.Write("\t\t\t\t\t\tName             : ");
+                    Console.Write("\n\n\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
 
-                    for (int i = 0; i < noLicenseCount; i++)
+                    for (i = 0; i < noLicenseCount; i++)
                     {
                         if (noLicense[i, 2] == name)
                         {
                             recordFound = true;
 
+                            if (result == 0)
+                            {
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                            }
+
                             if (noLicense[i, 3] == "1st")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 1st     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noLicense[i + 1, 3] = "2nd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
+                                result = 1;
+                                noLicense[noLicenseCount, 3] = "2nd";
+                                noLicense[noLicenseCount, 4] = 1250.ToString();
                             }
-                            else if (noLicense[i, 3] == "2nd")
+                            if (noLicense[i, 3] == "2nd")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 2nd     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noLicense[i + 1, 3] = "3rd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
+                                noLicense[noLicenseCount, 3] = "3rd";
+                                noLicense[noLicenseCount, 4] = 3000.ToString();
+                                result = 2;
+                            }
+                            if (noLicense[i, 3] == "3rd")
+                            {
+                                result = 3;
+                                noLicense[noLicenseCount, 3] = "Suspended";
+                                noLicense[noLicenseCount, 4] = 10000.ToString();
+                            }
+                            if (noLicense[i, 3] == "Suspended")
+                            {
+                                noLicense[noLicenseCount, 3] = "Suspended";
+                                result = 4;
                             }
                         }
                     }
 
+                    if (result == 1)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                    }
+                    if (result == 2)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                    }
+                    if (result == 3)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                        WriteCenter("|    Offense Type     : 3rd     |", 0);
+                    }
+                    if (result == 4)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+                        WriteCenter("|           ⚠  NOTICE           |", -2);
+                        WriteCenter("|                               |", 0);
+                        WriteCenter("|      DRIVER'S LICENSE IS      |", 0);
+                        WriteCenter("|           SUSPENDED           |", 0);
+                        WriteCenter("|                               |", 0);
+
+                        ticketNum--;
+                    }
+
+                    if (result != 0)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+
+                        ResetToDefaultColor();
+
+                        if (result == 1)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd ");
+                        if (result == 2)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd ");
+                        if (result == 3)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : Suspended");
+                    }
+
+                    ResetToDefaultColor();
 
                     if (recordFound == false)
                     {
@@ -234,57 +293,120 @@ namespace ttrs
                         ResetToDefaultColor();
                         noLicense[noLicenseCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
+                        noLicense[noLicenseCount, 4] = 500.ToString();
                     }
+
                     noLicense[noLicenseCount, 2] = name;
-                    Console.Write("\t\t\t\t\t\tPayment          : ");
-                    noLicense[noLicenseCount, 4] = Console.ReadLine();
-                    noLicenseCount++;
+                    Console.Write("\n\t\t\t\t\t\tPayment          : {0}", noLicense[noLicenseCount, 4]);
+
+                    if (result != 4)
+                    {
+                        noLicenseCount++;
+                        recordCounts++;
+                    }
 
                     break;
 
-                case "B":
-                    Console.Write("\n\t\t\t\t\t\tDate             : ");
-                    noRegistration[noRegistrationCount, 0] = Console.ReadLine();
+                case ConsoleKey.B:
+                    result = 0;
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+                    SetColor("yellow", "black");
+                    WriteCenter("         NO REGISTRATION         ", 5);
+                    ResetToDefaultColor();
+
+                    CheckDate("noRegistration");
+
+                    Console.Write("\n\t\t\t\t\t\tTicket Number    : ");
 
                     ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noRegistration[noRegistrationCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.Write("{0}", noRegistration[noRegistrationCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
-                    Console.Write("\t\t\t\t\t\tName             : ");
+                    Console.Write("\n\n\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
 
-                    for (int i = 0; i < noRegistrationCount; i++)
+                    for (i = 0; i < noRegistrationCount; i++)
                     {
                         if (noRegistration[i, 2] == name)
                         {
                             recordFound = true;
+
+                            if (result == 0)
+                            {
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                            }
+
                             if (noRegistration[i, 3] == "1st")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 1st     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noRegistration[i + 1, 3] = "2nd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
+                                result = 1;
+                                noRegistration[noRegistrationCount, 3] = "2nd";
+                                noRegistration[noRegistrationCount, 4] = 1250.ToString();
                             }
-                            else if (noRegistration[i, 3] == "2nd")
+                            if (noRegistration[i, 3] == "2nd")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 2nd     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noRegistration[i + 1, 3] = "3rd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
+                                noRegistration[noRegistrationCount, 3] = "3rd";
+                                noRegistration[noRegistrationCount, 4] = 3000.ToString();
+                                result = 2;
+                            }
+                            if (noRegistration[i, 3] == "3rd")
+                            {
+                                result = 3;
+                                noRegistration[noRegistrationCount, 3] = "Suspended";
+                                noRegistration[noRegistrationCount, 4] = 10000.ToString();
+                            }
+                            if (noRegistration[i, 3] == "Suspended")
+                            {
+                                noRegistration[noRegistrationCount, 3] = "Suspended";
+                                result = 4;
                             }
                         }
                     }
+
+                    if (result == 1)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                    }
+                    if (result == 2)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                    }
+                    if (result == 3)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                        WriteCenter("|    Offense Type     : 3rd     |", 0);
+                    }
+                    if (result == 4)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+                        WriteCenter("|           ⚠  NOTICE           |", -2);
+                        WriteCenter("|                               |", 0);
+                        WriteCenter("|      DRIVER'S LICENSE IS      |", 0);
+                        WriteCenter("|           SUSPENDED           |", 0);
+                        WriteCenter("|                               |", 0);
+
+                        ticketNum--;
+                    }
+
+                    if (result != 0)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+
+                        ResetToDefaultColor();
+
+                        if (result == 1)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd ");
+                        if (result == 2)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd ");
+                        if (result == 3)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : Suspended");
+                    }
+
+                    ResetToDefaultColor();
 
                     if (recordFound == false)
                     {
@@ -295,57 +417,120 @@ namespace ttrs
                         ResetToDefaultColor();
                         noRegistration[noRegistrationCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
+                        noRegistration[noRegistrationCount, 4] = 500.ToString();
                     }
+
                     noRegistration[noRegistrationCount, 2] = name;
-                    Console.Write("\t\t\t\t\t\tPayment          : ");
-                    noRegistration[noRegistrationCount, 4] = Console.ReadLine();
-                    noRegistrationCount++;
+                    Console.Write("\n\t\t\t\t\t\tPayment          : {0}", noRegistration[noRegistrationCount, 4]);
+
+                    if (result != 4)
+                    {
+                        noRegistrationCount++;
+                        recordCounts++;
+                    }
 
                     break;
 
-                case "C":
-                    Console.Write("\n\t\t\t\t\t\tDate             : ");
-                    noHelmet[noHelmetCount, 0] = Console.ReadLine();
+                case ConsoleKey.C:
+                    result = 0;
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+                    SetColor("yellow", "black");
+                    WriteCenter("            NO HELMET            ", 5);
+                    ResetToDefaultColor();
+
+                    CheckDate("noHelmet");
+
+                    Console.Write("\n\t\t\t\t\t\tTicket Number    : ");
 
                     ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noHelmet[noHelmetCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.Write("{0}", noHelmet[noHelmetCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
-                    Console.Write("\t\t\t\t\t\tName             : ");
+                    Console.Write("\n\n\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
 
-                    for (int i = 0; i < noHelmetCount; i++)
+                    for (i = 0; i < noHelmetCount; i++)
                     {
                         if (noHelmet[i, 2] == name)
                         {
                             recordFound = true;
+
+                            if (result == 0)
+                            {
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                            }
+
                             if (noHelmet[i, 3] == "1st")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 1st     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noHelmet[i + 1, 3] = "2nd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
+                                result = 1;
+                                noHelmet[noHelmetCount, 3] = "2nd";
+                                noHelmet[noHelmetCount, 4] = 1250.ToString();
                             }
-                            else if (noHelmet[i, 3] == "2nd")
+                            if (noHelmet[i, 3] == "2nd")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 2nd     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noHelmet[i + 1, 3] = "3rd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
+                                noHelmet[noHelmetCount, 3] = "3rd";
+                                noHelmet[noHelmetCount, 4] = 3000.ToString();
+                                result = 2;
+                            }
+                            if (noHelmet[i, 3] == "3rd")
+                            {
+                                result = 3;
+                                noHelmet[noHelmetCount, 3] = "Suspended";
+                                noHelmet[noHelmetCount, 4] = 10000.ToString();
+                            }
+                            if (noHelmet[i, 3] == "Suspended")
+                            {
+                                noHelmet[noHelmetCount, 3] = "Suspended";
+                                result = 4;
                             }
                         }
                     }
+
+                    if (result == 1)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                    }
+                    if (result == 2)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                    }
+                    if (result == 3)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                        WriteCenter("|    Offense Type     : 3rd     |", 0);
+                    }
+                    if (result == 4)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+                        WriteCenter("|           ⚠  NOTICE           |", -2);
+                        WriteCenter("|                               |", 0);
+                        WriteCenter("|      DRIVER'S LICENSE IS      |", 0);
+                        WriteCenter("|           SUSPENDED           |", 0);
+                        WriteCenter("|                               |", 0);
+
+                        ticketNum--;
+                    }
+
+                    if (result != 0)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+
+                        ResetToDefaultColor();
+
+                        if (result == 1)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd ");
+                        if (result == 2)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd ");
+                        if (result == 3)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : Suspended");
+                    }
+
+                    ResetToDefaultColor();
 
                     if (recordFound == false)
                     {
@@ -356,58 +541,120 @@ namespace ttrs
                         ResetToDefaultColor();
                         noHelmet[noHelmetCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
+                        noHelmet[noHelmetCount, 4] = 500.ToString();
                     }
+
                     noHelmet[noHelmetCount, 2] = name;
-                    Console.Write("\t\t\t\t\t\tPayment          : ");
-                    noHelmet[noHelmetCount, 4] = Console.ReadLine();
-                    noHelmetCount++;
+                    Console.Write("\n\t\t\t\t\t\tPayment          : {0}", noHelmet[noHelmetCount, 4]);
+
+                    if (result != 4)
+                    {
+                        noHelmetCount++;
+                        recordCounts++;
+                    }
 
                     break;
 
-                case "D":
-                    Console.Write("\n\t\t\t\t\t\tDate             : ");
-                    noInsurance[noInsuranceCount, 0] = Console.ReadLine();
+                case ConsoleKey.D:
+                    result = 0;
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+                    SetColor("yellow", "black");
+                    WriteCenter("          NO INSURANCE           ", 5);
+                    ResetToDefaultColor();
+
+                    CheckDate("noInsurance");
+
+                    Console.Write("\n\t\t\t\t\t\tTicket Number    : ");
 
                     ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", noInsurance[noInsuranceCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.Write("{0}", noInsurance[noInsuranceCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
-                    Console.Write("\t\t\t\t\t\tName             : ");
+                    Console.Write("\n\n\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
 
-                    for (int i = 0; i < noInsuranceCount; i++)
+                    for (i = 0; i < noInsuranceCount; i++)
                     {
                         if (noInsurance[i, 2] == name)
                         {
                             recordFound = true;
+
+                            if (result == 0)
+                            {
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                            }
+
                             if (noInsurance[i, 3] == "1st")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 1st     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noInsurance[i + 1, 3] = "2nd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
+                                result = 1;
+                                noInsurance[noInsuranceCount, 3] = "2nd";
+                                noInsurance[noInsuranceCount, 4] = 1250.ToString();
                             }
-                            else if (noInsurance[i, 3] == "2nd")
+                            if (noInsurance[i, 3] == "2nd")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 2nd     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                noInsurance[i + 1, 3] = "3rd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
+                                noInsurance[noInsuranceCount, 3] = "3rd";
+                                noInsurance[noInsuranceCount, 4] = 3000.ToString();
+                                result = 2;
+                            }
+                            if (noInsurance[i, 3] == "3rd")
+                            {
+                                result = 3;
+                                noInsurance[noInsuranceCount, 3] = "Suspended";
+                                noInsurance[noInsuranceCount, 4] = 10000.ToString();
+                            }
+                            if (noInsurance[i, 3] == "Suspended")
+                            {
+                                noInsurance[noInsuranceCount, 3] = "Suspended";
+                                result = 4;
                             }
                         }
                     }
 
+                    if (result == 1)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                    }
+                    if (result == 2)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                    }
+                    if (result == 3)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                        WriteCenter("|    Offense Type     : 3rd     |", 0);
+                    }
+                    if (result == 4)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+                        WriteCenter("|           ⚠  NOTICE           |", -2);
+                        WriteCenter("|                               |", 0);
+                        WriteCenter("|      DRIVER'S LICENSE IS      |", 0);
+                        WriteCenter("|           SUSPENDED           |", 0);
+                        WriteCenter("|                               |", 0);
+
+                        ticketNum--;
+                    }
+
+                    if (result != 0)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+
+                        ResetToDefaultColor();
+
+                        if (result == 1)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd ");
+                        if (result == 2)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd ");
+                        if (result == 3)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : Suspended");
+                    }
+
+                    ResetToDefaultColor();
 
                     if (recordFound == false)
                     {
@@ -418,57 +665,120 @@ namespace ttrs
                         ResetToDefaultColor();
                         noInsurance[noInsuranceCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
+                        noInsurance[noInsuranceCount, 4] = 500.ToString();
                     }
+
                     noInsurance[noInsuranceCount, 2] = name;
-                    Console.Write("\t\t\t\t\t\tPayment          : ");
-                    noInsurance[noInsuranceCount, 4] = Console.ReadLine();
-                    noInsuranceCount++;
+                    Console.Write("\n\t\t\t\t\t\tPayment          : {0}", noInsurance[noInsuranceCount, 4]);
+
+                    if (result != 4)
+                    {
+                        noInsuranceCount++;
+                        recordCounts++;
+                    }
 
                     break;
 
-                case "E":
-                    Console.Write("\n\t\t\t\t\t\tDate             : ");
-                    dui[duiCount, 0] = Console.ReadLine();
+                case ConsoleKey.E:
+                    result = 0;
 
-                    Console.Write("\t\t\t\t\t\tTicket Number    : ");
+                    SetColor("yellow", "black");
+                    WriteCenter("   DRIVING UNDER THE INFLUENCE   ", 5);
+                    ResetToDefaultColor();
+
+                    CheckDate("dui");
+
+                    Console.Write("\n\t\t\t\t\t\tTicket Number    : ");
 
                     ticketNum++;
                     SetColor("yellow", "black");
-                    Console.WriteLine("{0}", dui[duiCount, 1] = ticketNum.ToString("TN-000"));
+                    Console.Write("{0}", dui[duiCount, 1] = ticketNum.ToString("TN-000"));
                     ResetToDefaultColor();
 
-                    Console.Write("\t\t\t\t\t\tName             : ");
+                    Console.Write("\n\n\t\t\t\t\t\tName             : ");
                     name = Console.ReadLine();
 
-                    for (int i = 0; i < duiCount; i++)
+                    for (i = 0; i < duiCount; i++)
                     {
                         if (dui[i, 2] == name)
                         {
                             recordFound = true;
+
+                            if (result == 0)
+                            {
+                                SetColor("yellow", "black");
+                                WriteCenter("+-------------------------------+", 1);
+                                WriteCenter("|    Existing Record(s) Found   |", 0);
+                            }
+
                             if (dui[i, 3] == "1st")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 1st     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                dui[i + 1, 3] = "2nd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd");
+                                result = 1;
+                                dui[duiCount, 3] = "2nd";
+                                dui[duiCount, 4] = 1250.ToString();
                             }
-                            else if (dui[i, 3] == "2nd")
+                            if (dui[i, 3] == "2nd")
                             {
-                                SetColor("yellow", "black");
-                                WriteCenter("+-------------------------------+", 1);
-                                WriteCenter("|    Existing Record(s) Found   |", 0);
-                                WriteCenter("|    Offense Type     : 2nd     |", 0);
-                                WriteCenter("+-------------------------------+", 0);
-                                ResetToDefaultColor();
-                                dui[i + 1, 3] = "3rd";
-                                Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd");
+                                dui[duiCount, 3] = "3rd";
+                                dui[duiCount, 4] = 3000.ToString();
+                                result = 2;
+                            }
+                            if (dui[i, 3] == "3rd")
+                            {
+                                result = 3;
+                                dui[duiCount, 3] = "Suspended";
+                                dui[duiCount, 4] = 10000.ToString();
+                            }
+                            if (dui[i, 3] == "Suspended")
+                            {
+                                dui[duiCount, 3] = "Suspended";
+                                result = 4;
                             }
                         }
                     }
+
+                    if (result == 1)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                    }
+                    if (result == 2)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                    }
+                    if (result == 3)
+                    {
+                        WriteCenter("|    Offense Type     : 1st     |", 0);
+                        WriteCenter("|    Offense Type     : 2nd     |", 0);
+                        WriteCenter("|    Offense Type     : 3rd     |", 0);
+                    }
+                    if (result == 4)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+                        WriteCenter("|           ⚠  NOTICE           |", -2);
+                        WriteCenter("|                               |", 0);
+                        WriteCenter("|      DRIVER'S LICENSE IS      |", 0);
+                        WriteCenter("|           SUSPENDED           |", 0);
+                        WriteCenter("|                               |", 0);
+
+                        ticketNum--;
+                    }
+
+                    if (result != 0)
+                    {
+                        WriteCenter("+-------------------------------+", 0);
+
+                        ResetToDefaultColor();
+
+                        if (result == 1)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 2nd ");
+                        if (result == 2)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 3rd ");
+                        if (result == 3)
+                            Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : Suspended");
+                    }
+
+                    ResetToDefaultColor();
 
                     if (recordFound == false)
                     {
@@ -479,21 +789,66 @@ namespace ttrs
                         ResetToDefaultColor();
                         dui[duiCount, 3] = "1st";
                         Console.WriteLine("\n\t\t\t\t\t\tOffense Type     : 1st ");
+                        dui[duiCount, 4] = 500.ToString();
                     }
 
                     dui[duiCount, 2] = name;
-                    Console.Write("\t\t\t\t\t\tPayment          : ");
-                    dui[duiCount, 4] = Console.ReadLine();
-                    duiCount++;
+                    Console.Write("\n\t\t\t\t\t\tPayment          : {0}", dui[duiCount, 4]);
+
+                    if (result != 4)
+                    {
+                        duiCount++;
+                        recordCounts++;
+                    }
 
                     break;
             }
+
+            Console.ReadKey();
             return;
         }
 
         static void ViewTicketViolationSummary()
         {
             Console.Clear();
+
+            hr(0);
+            hr(28);
+
+            SetColor("yellow", "black");
+            WriteCenter("+------------------------------------------+", -18);
+            WriteCenter("View Options", -1);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("|  [A] View All                            |", 0);
+            WriteCenter("|  [B] View by Category                    |", 0);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("+------------------------------------------+", 0);
+            ResetToDefaultColor();
+
+            ConsoleKeyInfo choice = Console.ReadKey(true);
+
+            switch (choice.Key)
+            {
+                case ConsoleKey.A:
+                    ViewAll();
+                    break;
+                case ConsoleKey.B:
+                    ViewByCategory();
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        static void ViewAll()
+        {
+            Console.Clear();
+
+            SetColor("yellow", "yellow");
+            hr(0);
+            ResetToDefaultColor();
+
+            Console.WriteLine(" {0} Record(s) Found", recordCounts);
 
             SetColor("yellow", "yellow");
             hr(0);
@@ -505,6 +860,9 @@ namespace ttrs
             SetColor("black", "black");
             hr(0);
             ResetToDefaultColor();
+
+            Stopwatch time = new Stopwatch();
+            time.Start();
 
             for (int i = 0; i < duiCount; i++)
             {
@@ -617,10 +975,625 @@ namespace ttrs
                 Console.WriteLine("|");
             }
 
+            time.Stop();
+
+            SetColor("yellow", "yellow");
+            hr(0);
+            WriteCenter("Search and Index Time (" + time.ElapsedMilliseconds + "ms)", 2);
+            ResetToDefaultColor();
+
+            Console.ReadKey();
+        }
+
+        static void ViewByCategory()
+        {
+            Console.Clear();
+
+            int counter = 0;
+
+            hr(0);
+            hr(28);
+
+            SetColor("yellow", "black");
+            WriteCenter("+------------------------------------------+", -18);
+            WriteCenter("List of Violations", -1);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("|  [A] No License                          |", 0);
+            WriteCenter("|  [B] No Registration                     |", 0);
+            WriteCenter("|  [C] No Helmet                           |", 0);
+            WriteCenter("|  [D] No Insurance                        |", 0);
+            WriteCenter("|  [E] Driving Under the Influence (DUI)   |", 0);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("+------------------------------------------+", 0);
+            ResetToDefaultColor();
+
+            ConsoleKeyInfo choice = Console.ReadKey(true);
+
+            Console.Clear();
+
             SetColor("yellow", "yellow");
             hr(0);
             ResetToDefaultColor();
 
+            WriteCenter("\n", 0);
+
+            SetColor("yellow", "yellow");
+            hr(0);
+            ResetToDefaultColor();
+
+            Console.WriteLine(" Violation            | Date           | Ticket Number | Name                      " +
+                "| Offense Type | Payment     |");
+
+            SetColor("black", "black");
+            hr(0);
+            ResetToDefaultColor();
+
+            Stopwatch time = new Stopwatch();
+            time.Start();
+
+            switch (choice.Key)
+            {
+                case ConsoleKey.A:
+                    for (int i = 0; i < noLicenseCount; i++)
+                    {
+                        counter++;
+
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No License");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                    break;
+
+                case ConsoleKey.B:
+                    for (int i = 0; i < noRegistrationCount; i++)
+                    {
+                        counter++;
+
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Registration");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                    break;
+
+                case ConsoleKey.C:
+                    for (int i = 0; i < noHelmetCount; i++)
+                    {
+                        counter++;
+
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Helmet");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                    break;
+
+                case ConsoleKey.D:
+                    for (int i = 0; i < noInsuranceCount; i++)
+                    {
+                        counter++;
+
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Insurance");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                    break;
+
+                case ConsoleKey.E:
+                    for (int i = 0; i < duiCount; i++)
+                    {
+                        counter++;
+
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  D U I");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                    break;
+            }
+
+            time.Stop();
+
+            hr(0);
+
+            if (counter != 0)
+            {
+                Console.SetCursorPosition(0, Console.CursorTop - counter - 4);
+                Console.WriteLine(" {0} Record(s) Found", counter);
+                WriteCenter("Search and Index Time (" + time.ElapsedMilliseconds + "ms)", counter + 5);
+            }
+            else
+            {
+                Console.SetCursorPosition(0, 1);
+                Console.WriteLine(" {0} Record(s) Found", counter);
+                WriteCenter("No Record(s) to Display", 4);
+                Console.WriteLine();
+                hr(0);
+                WriteCenter("Search and Index Time (" + time.ElapsedMilliseconds + "ms)", 2);
+            }
+
+            Console.ReadKey();
+        }
+
+        static void SearchViolation()
+        {
+            Console.Clear();
+
+            hr(0);
+            hr(28);
+
+            SetColor("yellow", "black");
+            WriteCenter("+------------------------------------------+", -20);
+            WriteCenter("Search Options", -1);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("|  [A] Search by Name                      |", 0);
+            WriteCenter("|  [B] Search by Ticket #                  |", 0);
+            WriteCenter("|                                          |", 0);
+            WriteCenter("+------------------------------------------+", 0);
+            ResetToDefaultColor();
+
+            ConsoleKeyInfo choice = Console.ReadKey(true);
+
+            switch (choice.Key)
+            {
+                case ConsoleKey.A:
+                    SearchByName();
+                    break;
+                case ConsoleKey.B:
+                    SearchByTicket();
+                    break;
+            }
+
+            return;
+        }
+
+        static void SearchByName()
+        {
+            string name;
+            int numEntries = noLicenseCount + noInsuranceCount + noHelmetCount + noRegistrationCount + duiCount;
+            int counter = 0;
+
+            Console.Write("\n\n\t\t\t\t\tViolator's Name: ");
+            name = Console.ReadLine();
+
+            Console.Clear();
+            hr(0);
+
+            for (int i = 0; i < noLicenseCount; i++)
+            {
+                if (noLicense[i, 2] == name)
+                    counter++;
+            }
+            for (int i = 0; i < duiCount; i++)
+            {
+                if (dui[i, 2] == name)
+                    counter++;
+            }
+            for (int i = 0; i < noInsuranceCount; i++)
+            {
+                if (noInsurance[i, 2] == name)
+                    counter++;
+            }
+            for (int i = 0; i < noRegistrationCount; i++)
+            {
+                if (noRegistration[i, 2] == name)
+                    counter++;
+            }
+            for (int i = 0; i < noHelmetCount; i++)
+            {
+                if (noHelmet[i, 2] == name)
+                    counter++;
+            }
+
+            Stopwatch time = new Stopwatch();
+            time.Start();
+
+            if (counter > 0)
+            {
+                Console.WriteLine(" {0} Record(s) Found (out of {1} Entries)", counter, numEntries);
+
+                hr(0);
+
+                Console.Write(" Violation            | Date           | Ticket Number | Name                      " +
+                    "| Offense Type | Payment     |");
+
+                hr(1);
+
+                for (int i = 0; i < duiCount; i++)
+                {
+                    if (dui[i, 2] == name)
+                    {
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  DUI");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + dui[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                }
+                for (int i = 0; i < noHelmetCount; i++)
+                {
+                    if (noHelmet[i, 2] == name)
+                    {
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Helmet");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noHelmet[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                }
+                for (int i = 0; i < noInsuranceCount; i++)
+                {
+                    if (noInsurance[i, 2] == name)
+                    {
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Insurance");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noInsurance[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                }
+                for (int i = 0; i < noLicenseCount; i++)
+                {
+
+                    if (noLicense[i, 2] == name)
+                    {
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No License");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noLicense[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                }
+                for (int i = 0; i < noRegistrationCount; i++)
+                {
+                    if (noRegistration[i, 2] == name)
+                    {
+                        tableRow();
+
+                        Console.SetCursorPosition(0, Console.CursorTop);
+                        Console.WriteLine("  No Registration");
+                        Console.SetCursorPosition(22, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 0]);
+                        Console.SetCursorPosition(39, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 1]);
+                        Console.SetCursorPosition(55, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 2]);
+                        Console.SetCursorPosition(83, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 3]);
+                        Console.SetCursorPosition(98, Console.CursorTop - 1);
+                        Console.WriteLine("| " + noRegistration[i, 4]);
+                        Console.SetCursorPosition(112, Console.CursorTop - 1);
+                        Console.WriteLine("|");
+                    }
+                }
+            }
+            else
+            {
+                hr(0);
+
+                Console.WriteLine("  {0} Record(s) Found (out of {1} Entries)", counter, numEntries);
+
+                hr(0);
+
+                Console.WriteLine(" Violation            | Date           | Ticket Number | Name                      " +
+                    "| Offense Type | Payment     |");
+                hr(0);
+
+                Console.WriteLine();
+                WriteCenter("No Record(s) to Display", 1);
+                Console.WriteLine();
+
+                hr(0);
+            }
+
+            time.Stop();
+
+            counter = 0;
+
+            hr(0);
+            WriteCenter("Search and Index Time (" + time.ElapsedMilliseconds + "ms)", 2);
+            Console.ReadKey();
+        }
+
+        static void SearchByTicket()
+        {
+
+            string ticket;
+
+            Console.Write("\n\n\t\t\t\t\tTicket Number: ");
+            ticket = Console.ReadLine();
+            Console.Clear();
+
+
+            int counter = 0;
+
+            for (int i = 0; i < noLicenseCount; i++)
+            {
+                if (noLicense[i, 1] == ticket)
+                    counter++;
+            }
+            for (int i = 0; i < duiCount; i++)
+            {
+                if (dui[i, 1] == ticket)
+                    counter++;
+            }
+            for (int i = 0; i < noInsuranceCount; i++)
+            {
+                if (noInsurance[i, 1] == ticket)
+                    counter++;
+            }
+            for (int i = 0; i < noRegistrationCount; i++)
+            {
+                if (noRegistration[i, 1] == ticket)
+                    counter++;
+            }
+            for (int i = 0; i < noHelmetCount; i++)
+            {
+                if (noHelmet[i, 1] == ticket)
+                    counter++;
+            }
+
+            if (counter > 0)
+            {
+                hr(0);
+                WriteCenter("Record Found", 6);
+                hr(21);
+                for (int i = 0; i < noLicenseCount; i++)
+                {
+                    if (noLicense[i, 1] == ticket)
+                    {
+                        SetColor("yellow", "black");                       
+                        WriteCenter("                                    ", -20);
+                        WriteCenter("No License", -1);
+                        ResetToDefaultColor();
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 1);
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Date    : " + noLicense[i, 0], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Ticket #: " + noLicense[i, 1], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Name    : " + noLicense[i, 2], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Offense : " + noLicense[i, 3], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Payment : " + noLicense[i, 4], -1);
+                        WriteCenter("|                                  |", 0);
+                        ResetToDefaultColor();
+                        WriteCenter("                                    ", 0);
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", 0);
+                        ResetToDefaultColor();
+                    }
+                }
+                for (int i = 0; i < duiCount; i++)
+                {
+                    if (dui[i, 1] == ticket)
+                    {
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", -20);
+                        WriteCenter("No License", -1);
+                        ResetToDefaultColor();
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 1);
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Date    : " + dui[i, 0], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Ticket #: " + dui[i, 1], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Name    : " + dui[i, 2], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Offense : " + dui[i, 3], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Payment : " + dui[i, 4], -1);
+                        WriteCenter("|                                  |", 0);
+                        ResetToDefaultColor();
+                        WriteCenter("                                    ", 0);
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", 0);
+                        ResetToDefaultColor();
+                    }
+                }
+                for (int i = 0; i < noInsuranceCount; i++)
+                {
+                    if (noInsurance[i, 1] == ticket)
+                    {
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", -20);
+                        WriteCenter("No License", -1);
+                        ResetToDefaultColor();
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 1);
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Date    : " + noInsurance[i, 0], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Ticket #: " + noInsurance[i, 1], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Name    : " + noInsurance[i, 2], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Offense : " + noInsurance[i, 3], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Payment : " + noInsurance[i, 4], -1);
+                        WriteCenter("|                                  |", 0);
+                        ResetToDefaultColor();
+                        WriteCenter("                                    ", 0);
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", 0);
+                        ResetToDefaultColor();
+                    }
+                }
+                for (int i = 0; i < noRegistrationCount; i++)
+                {
+                    if (noRegistration[i, 1] == ticket)
+                    {
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", -20);
+                        WriteCenter("No License", -1);
+                        ResetToDefaultColor();
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 1);
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Date    : " + noRegistration[i, 0], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Ticket #: " + noRegistration[i, 1], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Name    : " + noRegistration[i, 2], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Offense : " + noRegistration[i, 3], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Payment : " + noRegistration[i, 4], -1);
+                        WriteCenter("|                                  |", 0);
+                        ResetToDefaultColor();
+                        WriteCenter("                                    ", 0);
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", 0);
+                        ResetToDefaultColor();
+                    }
+                }
+                for (int i = 0; i < noHelmetCount; i++)
+                {
+                    if (noHelmet[i, 1] == ticket)
+                    {
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", -20);
+                        WriteCenter("No License", -1);
+                        ResetToDefaultColor();
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 1);
+                        SetColor("yellow", "black");
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Date    : " + noHelmet[i, 0], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Ticket #: " + noHelmet[i, 1], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Name    : " + noHelmet[i, 2], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Offense : " + noHelmet[i, 3], -1);
+                        WriteCenter("|                                  |", 0);
+                        WriteCenter("Payment : " + noHelmet[i, 4], -1);
+                        WriteCenter("|                                  |", 0);
+                        ResetToDefaultColor();
+                        WriteCenter("                                    ", 0);
+                        SetColor("yellow", "black");
+                        WriteCenter("                                    ", 0);
+                        ResetToDefaultColor();
+                    }
+                }
+            }
+            else
+                Console.WriteLine("\nNo Record Found \n");
+
+            counter = 0;
             Console.ReadKey();
         }
 
@@ -715,7 +1688,6 @@ namespace ttrs
         }
         static bool Authenticate(string username, string password)
         {
-            int cWidth = Console.WindowWidth;
             Console.BackgroundColor = ConsoleColor.Yellow;
 
             if (username == "enforcer" && password == "imissyou")
@@ -747,7 +1719,7 @@ namespace ttrs
                 Thread.Sleep(150);
                 WriteCenter("MISSING USERNAME/PASSWORD", 2);
                 Console.SetCursorPosition(72, Console.CursorTop - 1);
-                Thread.Sleep(3000);
+                Console.ReadKey();
 
                 return false;
             }
@@ -757,11 +1729,244 @@ namespace ttrs
                 Thread.Sleep(150);
                 WriteCenter("INCORRECT USERNAME/PASSWORD", 2);
                 Console.SetCursorPosition(73, Console.CursorTop - 1);
-                Thread.Sleep(3000);
+                Console.ReadKey();
             }
 
             Console.ResetColor();
             return false;
+        }
+
+        static void CheckDate(string violationType)
+        {
+            DateTime date;
+            bool dateIsValid;
+            int counter = 0;
+
+            switch (violationType)
+            {
+                case "noLicense":
+                    while (true)
+                    {
+                        try
+                        {
+                            if (counter != 0)
+                            {
+                                Console.SetCursorPosition(0, Console.CursorTop - 6);
+                                Console.WriteLine("\t\t\t\t\t\t\t\t                                                           ");
+                                Console.SetCursorPosition(0, Console.CursorTop - 4);
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noLicense[noLicenseCount, 0] = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noLicense[noLicenseCount, 0] = Console.ReadLine();
+                            }
+
+                            date = DateTime.ParseExact(noLicense[noLicenseCount, 0], "MM/dd/yyyy", null);
+                            noLicense[noLicenseCount, 0] = date.ToString("MM/dd/yyyy");
+
+                            dateIsValid = true;
+                        }
+                        catch (FormatException)
+                        {
+                            dateIsValid = false;
+                            counter++;
+
+                            SetColor("yellow", "black");
+                            WriteCenter("+-------------------------------+", 1);
+                            WriteCenter("|                               |", 0);
+                            SetColor("", "red");
+                            WriteCenter("⚠  ERROR", -1);
+                            SetColor("yellow", "black");
+                            WriteCenter("|      Invalid date format.     |", 0);
+                            WriteCenter("+-------------------------------+", 0);
+                            ResetToDefaultColor();
+                        }
+                        if (dateIsValid == true)
+                            break;
+                    }
+                    break;
+
+                case "noRegistration":
+                    while (true)
+                    {
+                        try
+                        {
+                            if (counter != 0)
+                            {
+                                Console.SetCursorPosition(0, Console.CursorTop - 6);
+                                Console.WriteLine("\t\t\t\t\t\t\t\t                                                           ");
+                                Console.SetCursorPosition(0, Console.CursorTop - 4);
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noRegistration[noRegistrationCount, 0] = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noRegistration[noRegistrationCount, 0] = Console.ReadLine();
+                            }
+
+                            date = DateTime.ParseExact(noRegistration[noRegistrationCount, 0], "MM/dd/yyyy", null);
+                            noRegistration[noRegistrationCount, 0] = date.ToString("MM/dd/yyyy");
+
+                            dateIsValid = true;
+                        }
+                        catch (FormatException)
+                        {
+                            dateIsValid = false;
+                            counter++;
+
+                            SetColor("yellow", "black");
+                            WriteCenter("+-------------------------------+", 1);
+                            WriteCenter("|                               |", 0);
+                            SetColor("", "red");
+                            WriteCenter("⚠  ERROR", -1);
+                            SetColor("yellow", "black");
+                            WriteCenter("|      Invalid date format.     |", 0);
+                            WriteCenter("+-------------------------------+", 0);
+                            ResetToDefaultColor();
+                        }
+                        if (dateIsValid == true)
+                            break;
+                    }
+                    break;
+
+                case "noHelmet":
+                    while (true)
+                    {
+                        try
+                        {
+                            if (counter != 0)
+                            {
+                                Console.SetCursorPosition(0, Console.CursorTop - 6);
+                                Console.WriteLine("\t\t\t\t\t\t\t\t                                                           ");
+                                Console.SetCursorPosition(0, Console.CursorTop - 4);
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noHelmet[noHelmetCount, 0] = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noHelmet[noHelmetCount, 0] = Console.ReadLine();
+                            }
+
+                            date = DateTime.ParseExact(noHelmet[noHelmetCount, 0], "MM/dd/yyyy", null);
+                            noHelmet[noHelmetCount, 0] = date.ToString("MM/dd/yyyy");
+
+                            dateIsValid = true;
+                        }
+                        catch (FormatException)
+                        {
+                            dateIsValid = false;
+                            counter++;
+
+                            SetColor("yellow", "black");
+                            WriteCenter("+-------------------------------+", 1);
+                            WriteCenter("|                               |", 0);
+                            SetColor("", "red");
+                            WriteCenter("⚠  ERROR", -1);
+                            SetColor("yellow", "black");
+                            WriteCenter("|      Invalid date format.     |", 0);
+                            WriteCenter("+-------------------------------+", 0);
+                            ResetToDefaultColor();
+                        }
+                        if (dateIsValid == true)
+                            break;
+                    }
+                    break;
+
+                case "noInsurance":
+                    while (true)
+                    {
+                        try
+                        {
+                            if (counter != 0)
+                            {
+                                Console.SetCursorPosition(0, Console.CursorTop - 6);
+                                Console.WriteLine("\t\t\t\t\t\t\t\t                                                           ");
+                                Console.SetCursorPosition(0, Console.CursorTop - 4);
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noInsurance[noInsuranceCount, 0] = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                noInsurance[noInsuranceCount, 0] = Console.ReadLine();
+                            }
+
+                            date = DateTime.ParseExact(noInsurance[noInsuranceCount, 0], "MM/dd/yyyy", null);
+                            noInsurance[noInsuranceCount, 0] = date.ToString("MM/dd/yyyy");
+
+                            dateIsValid = true;
+                        }
+                        catch (FormatException)
+                        {
+                            dateIsValid = false;
+                            counter++;
+
+                            SetColor("yellow", "black");
+                            WriteCenter("+-------------------------------+", 1);
+                            WriteCenter("|                               |", 0);
+                            SetColor("", "red");
+                            WriteCenter("⚠  ERROR", -1);
+                            SetColor("yellow", "black");
+                            WriteCenter("|      Invalid date format.     |", 0);
+                            WriteCenter("+-------------------------------+", 0);
+                            ResetToDefaultColor();
+                        }
+                        if (dateIsValid == true)
+                            break;
+                    }
+                    break;
+
+                case "dui":
+                    while (true)
+                    {
+                        try
+                        {
+                            if (counter != 0)
+                            {
+                                Console.SetCursorPosition(0, Console.CursorTop - 6);
+                                Console.WriteLine("\t\t\t\t\t\t\t\t                                                           ");
+                                Console.SetCursorPosition(0, Console.CursorTop - 4);
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                dui[duiCount, 0] = Console.ReadLine();
+                            }
+                            else
+                            {
+                                Console.Write("\n\n\t\t\t\t\t\tDate (MM/DD/YYYY): ");
+                                dui[duiCount, 0] = Console.ReadLine();
+                            }
+
+                            date = DateTime.ParseExact(dui[duiCount, 0], "MM/dd/yyyy", null);
+                            dui[duiCount, 0] = date.ToString("MM/dd/yyyy");
+
+                            dateIsValid = true;
+                        }
+                        catch (FormatException)
+                        {
+                            dateIsValid = false;
+                            counter++;
+
+                            SetColor("yellow", "black");
+                            WriteCenter("+-------------------------------+", 1);
+                            WriteCenter("|                               |", 0);
+                            SetColor("", "red");
+                            WriteCenter("⚠  ERROR", -1);
+                            SetColor("yellow", "black");
+                            WriteCenter("|      Invalid date format.     |", 0);
+                            WriteCenter("+-------------------------------+", 0);
+                            ResetToDefaultColor();
+                        }
+                        if (dateIsValid == true)
+                            break;
+                    }
+                    break;
+            }
+
+            if (counter != 0)
+                Console.SetCursorPosition(0, Console.CursorTop + 5);
         }
 
         // Beyond this are methods for UI Design.
@@ -794,6 +1999,48 @@ namespace ttrs
             Console.SetCursorPosition((cWidth - text.Length) / 2, Console.CursorTop + cPosition);
 
             Console.WriteLine(text);
+        }
+
+        static void ResetToDefaultColor()
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+        static void SetColor(string bg, string fg)
+        {
+            switch (bg)
+            {
+                case "gray":
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    break;
+                case "white":
+                    Console.BackgroundColor = ConsoleColor.White;
+                    break;
+                case "yellow":
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+                case "darkyellow":
+                    Console.BackgroundColor = ConsoleColor.DarkYellow;
+                    break;
+            }
+            switch (fg)
+            {
+                case "white":
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+                case "black":
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    break;
+                case "yellow":
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case "red":
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+            }
         }
 
         static string ReadField(int cPosition, string fieldType)
@@ -842,7 +2089,7 @@ namespace ttrs
                         {
                             input.Remove(i - 1, 1);
                             i -= 2;
-                            // Line 219 does not remove the text in display, only in the background
+                            // Line 1711 does not remove the text in display, only in the background
                             // As such writing \b on the console replicates the backspace visually
                             Console.Write(" \b"); // matches a backspace, \u0008 Ref: Micorosft Learn Docs.
                             input.Remove(i, 1);
@@ -852,122 +2099,7 @@ namespace ttrs
                 return input.ToString();
             }
             else
-            {
-                int cWidth = Console.WindowWidth;
-
-                Console.SetCursorPosition((cWidth - 16) / 2, Console.CursorTop + cPosition);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("                ");
-
-                Console.SetCursorPosition((cWidth - 16) / 2, Console.CursorTop - 1);
-
-                StringBuilder input = new StringBuilder();
-
-                int i = 0;
-
-                while (i < 16)
-                {
-                    ConsoleKeyInfo inputtedChar = Console.ReadKey();
-                    i++;
-
-                    if (inputtedChar.Key == ConsoleKey.Enter)
-                        break;
-
-                    input.Append(inputtedChar.KeyChar);
-
-                    if (inputtedChar.Key == ConsoleKey.Backspace)
-                    {
-                        if (input.Length < 2)
-                        {
-                            Console.SetCursorPosition(Console.CursorLeft + 1, Console.CursorTop);
-                            input.Remove(0, 1);
-                            i--;
-                            continue;
-                        }
-                        {
-                            input.Remove(i - 1, 1);
-                            i -= 2;
-                            Console.Write(" \b");
-                            input.Remove(i, 1);
-                        }
-                    }
-                }
-                return input.ToString();
-            }
-        }
-        static void ResetToDefaultColor()
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.BackgroundColor = ConsoleColor.Black;
-        }
-        static void SetColor(string bg, string fg)
-        {
-            switch (bg)
-            {
-                case "gray":
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    break;
-                case "white":
-                    Console.BackgroundColor = ConsoleColor.White;
-                    break;
-                case "yellow":
-                    Console.BackgroundColor = ConsoleColor.Yellow;
-                    break;
-                case "red":
-                    Console.BackgroundColor = ConsoleColor.Red;
-                    break;
-                case "darkyellow":
-                    Console.BackgroundColor = ConsoleColor.DarkYellow;
-                    break;
-            }
-            switch (fg)
-            {
-                case "white":
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-                case "black":
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    break;
-                case "yellow":
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    break;
-            }
-        }
-        static void UnderConstruction()
-        {
-            Console.Clear();
-
-            hr(0);
-            WriteCenter("TRAFFIC TICKET REGISTRY SYSTEM", 8);
-
-            SetColor("yellow", "black");
-            WriteCenter("+-------------------------------------+", 2);
-            WriteCenter("UNDER CONSTRUCTION", -1);
-            WriteCenter("|                                     |", 0);
-            WriteCenter("|    [1] Go Back                      |", 0);
-            WriteCenter("|                                     |", 0);
-            WriteCenter("+-------------------------------------+", 0);
-            ResetToDefaultColor();
-
-            WriteCenter("TTRS v0.02UIb", 9);
-
-            hr(1);
-
-            ConsoleKeyInfo choice = Console.ReadKey(true);
-
-            SetColor("black", "yellow");
-            if (choice.Key == ConsoleKey.D1)
-            {
-                int i = -14;
-
-                if (Console.BufferHeight != 30)
-                    i = -15;
-
-                WriteCenter("[1] Go Back                   ", i);
-                Thread.Sleep(1000);
-                return;
-            }
+                return "Invalid argument passed to parameter";
         }
     }
 }
