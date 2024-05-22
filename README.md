@@ -43,11 +43,11 @@ The Traffic Ticket Registry System is yet another tool for managing traffic tick
 
 ## Previews
 <div align="center">
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/2bd15f46-666d-4e62-8399-982662bbb8c6" alt="Login Page"> 
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/2bd15f46-666d-4e62-8399-982662bbb8c6" style="width: 60%"> 
   <h4>Login Page</h4>
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/dadca220-4dcd-4291-8c1f-8e599f860e1a">
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/dadca220-4dcd-4291-8c1f-8e599f860e1a" style="width: 60%">
   <h4>Main Menu</h4>
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/e7b775e5-9ae9-4d7a-84a0-8b2cc22608fd">
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/e7b775e5-9ae9-4d7a-84a0-8b2cc22608fd" style="width: 60%">
   <h4>Ticket Records Summary</h4>
 </div>
 
