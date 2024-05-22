@@ -14,10 +14,10 @@ This group project <b>only utilizes arrays</b> and <ins>does <b>not</b></ins> in
 <ins> Code will hopefully be refactored in the future. </ins>
 
 ## Contents
-- ⊞ [Application Description](https://github.com/derkandre/Traffic-Ticket-Registry-System/edit/main/README.md#description)
-- ⍟ [Features](https://github.com/derkandre/Traffic-Ticket-Registry-System/edit/main/README.md#features)
-- ☰ [Screenshots & Previews](https://github.com/derkandre/Traffic-Ticket-Registry-System/edit/main/README.md#previews)
-- © [License and Disclaimers](https://github.com/derkandre/Traffic-Ticket-Registry-System/edit/main/README.md#disclaimer-and-license)
+- ⊞ [Application Description](https://github.com/derkandre/Traffic-Ticket-Registry-System?tab=readme-ov-file#description)
+- ⍟ [Features](https://github.com/derkandre/Traffic-Ticket-Registry-System?tab=readme-ov-file#features)
+- ☰ [Screenshots & Previews](https://github.com/derkandre/Traffic-Ticket-Registry-System?tab=readme-ov-file#previews)
+- © [License and Disclaimers](https://github.com/derkandre/Traffic-Ticket-Registry-System?tab=readme-ov-file#disclaimer-and-license)
 
 
 # C# Program Description and Features
@@ -43,11 +43,11 @@ The Traffic Ticket Registry System is yet another tool for managing traffic tick
 
 ## Previews
 <div align="center">
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/2bd15f46-666d-4e62-8399-982662bbb8c6" style="width: 60%"> 
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/2bd15f46-666d-4e62-8399-982662bbb8c6" style="width: 620px"> 
   <h4>Login Page</h4>
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/dadca220-4dcd-4291-8c1f-8e599f860e1a" style="width: 60%">
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/dadca220-4dcd-4291-8c1f-8e599f860e1a" style="width: 620px">
   <h4>Main Menu</h4>
-  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/e7b775e5-9ae9-4d7a-84a0-8b2cc22608fd" style="width: 60%">
+  <img src="https://github.com/derkandre/Traffic-Ticket-Registry-System/assets/67269555/e7b775e5-9ae9-4d7a-84a0-8b2cc22608fd" style="width: 620px">
   <h4>Ticket Records Summary</h4>
 </div>
 
