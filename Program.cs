@@ -1,15 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Dynamic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
-using System.Threading;
-using System.Timers;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ttrs
 {
@@ -65,7 +56,7 @@ namespace ttrs
                     WriteCenter("+-------------------------------------+", 0);
                     ResetToDefaultColor();
 
-                    WriteCenter("TTRS v0.08a", 7);
+                    WriteCenter("TTRS v1.0", 7);
 
                     hr(1);
 
@@ -1690,7 +1681,7 @@ namespace ttrs
         {
             Console.BackgroundColor = ConsoleColor.Yellow;
 
-            if (username == "enforcer" && password == "imissyou")
+            if (username == "enforcer" && password == "password")
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Thread.Sleep(150);
@@ -1969,6 +1960,65 @@ namespace ttrs
                 Console.SetCursorPosition(0, Console.CursorTop + 5);
         }
 
+        static string ReadField(int cPosition, string fieldType)
+        {
+            if (fieldType == "user/pass")
+            {
+                int cWidth = Console.WindowWidth;
+
+                Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop + cPosition);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("        ");
+
+                Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop - 1);
+
+                StringBuilder input = new StringBuilder();
+
+                int i = 0;
+
+                while (i < 8)
+                {
+                    ConsoleKeyInfo inputtedChar = Console.ReadKey();
+                    input.Append(inputtedChar.KeyChar);
+                    i++;
+
+                    if (inputtedChar.Key == ConsoleKey.Enter) // Logic error, the append should be after this
+                        break;
+
+                    // Intervention for the backspace key to not be appended to our string; for deleting characters purpose
+                    if (inputtedChar.Key == ConsoleKey.Backspace)
+                    {
+                        /* Intervention for backspace to not go beyond the black field box.
+                           Also because in line 219, when there is only 1 character left it produces
+                           an exception: ArgumentOutOfRangeException: StartIndex cannot be less than zero. */
+                        if (input.Length < 2)
+                        {
+                            /* Mostly went to trial and error until the backspace problem is solved.
+                               The backspace no longer goes beyond the black field box. This is fixed by
+                               adding 1 to the cursor position; basically just goes back to the position
+                               where a backspace was used */
+                            Console.SetCursorPosition(Console.CursorLeft + 1, Console.CursorTop);
+                            input.Remove(0, 1);
+                            i--;
+                            continue; // Skips our next group of code that would remove another character
+                        }
+                        {
+                            input.Remove(i - 1, 1);
+                            i -= 2;
+                            // Line 1711 does not remove the text in display, only in the background
+                            // As such writing \b on the console replicates the backspace visually
+                            Console.Write(" \b"); // matches a backspace, \u0008 Ref: Micorosft Learn Docs.
+                            input.Remove(i, 1);
+                        }
+                    }
+                }
+                return input.ToString();
+            }
+            else
+                return "Invalid argument passed to parameter";
+        }
+
         // Beyond this are methods for UI Design.
 
         static void hr(int cPosition) // Inspired by HTML's horizontal rule
@@ -2041,65 +2091,6 @@ namespace ttrs
                     Console.ForegroundColor = ConsoleColor.Red;
                     break;
             }
-        }
-
-        static string ReadField(int cPosition, string fieldType)
-        {
-            if (fieldType == "user/pass")
-            {
-                int cWidth = Console.WindowWidth;
-
-                Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop + cPosition);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("        ");
-
-                Console.SetCursorPosition((cWidth - "********".Length) / 2, Console.CursorTop - 1);
-
-                StringBuilder input = new StringBuilder();
-
-                int i = 0;
-
-                while (i < 8)
-                {
-                    ConsoleKeyInfo inputtedChar = Console.ReadKey();
-                    input.Append(inputtedChar.KeyChar);
-                    i++;
-
-                    if (inputtedChar.Key == ConsoleKey.Enter) // Logic error, the append should be after this
-                        break;
-
-                    // Intervention for the backspace key to not be appended to our string; for deleting characters purpose
-                    if (inputtedChar.Key == ConsoleKey.Backspace)
-                    {
-                        /* Intervention for backspace to not go beyond the black field box.
-                           Also because in line 219, when there is only 1 character left it produces
-                           an exception: ArgumentOutOfRangeException: StartIndex cannot be less than zero. */
-                        if (input.Length < 2)
-                        {
-                            /* Mostly went to trial and error until the backspace problem is solved.
-                               The backspace no longer goes beyond the black field box. This is fixed by
-                               adding 1 to the cursor position; basically just goes back to the position
-                               where a backspace was used */
-                            Console.SetCursorPosition(Console.CursorLeft + 1, Console.CursorTop);
-                            input.Remove(0, 1);
-                            i--;
-                            continue; // Skips our next group of code that would remove another character
-                        }
-                        {
-                            input.Remove(i - 1, 1);
-                            i -= 2;
-                            // Line 1711 does not remove the text in display, only in the background
-                            // As such writing \b on the console replicates the backspace visually
-                            Console.Write(" \b"); // matches a backspace, \u0008 Ref: Micorosft Learn Docs.
-                            input.Remove(i, 1);
-                        }
-                    }
-                }
-                return input.ToString();
-            }
-            else
-                return "Invalid argument passed to parameter";
         }
     }
 }
